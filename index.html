@@ -13,6 +13,18 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <svg width="0" height="0">
+      <filter id="goo">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="14" result="blur" />
+        <feColorMatrix
+          in="blur"
+          mode="matrix"
+          values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -9"
+          result="goo"
+        />
+      </filter>
+    </svg>
+
     <svg class="noise" xmlns="http://www.w3.org/2000/svg">
       <filter id="grain">
         <feTurbulence
@@ -33,6 +45,7 @@
           <li><a href="#muzik">Müzik</a></li>
           <li><a href="#uyeler">Üyeler</a></li>
           <li><a href="#video">Video</a></li>
+          <li><a href="#takvim">Takvim</a></li>
           <li><a href="#konser">Konser</a></li>
           <li><a href="#sosyal">Sosyal</a></li>
           <li><a href="#haberler">Haberler</a></li>
@@ -45,70 +58,65 @@
       <section class="hero">
         <div class="hero-atmosphere" aria-hidden="true">
           <div class="hero-beams">
-            <span class="beam" style="--i: 0"></span>
-            <span class="beam" style="--i: 1"></span>
-            <span class="beam" style="--i: 2"></span>
-            <span class="beam" style="--i: 3"></span>
-            <span class="beam" style="--i: 4"></span>
-            <span class="beam" style="--i: 5"></span>
-            <span class="beam" style="--i: 6"></span>
+            <span class="beam" style="--i:0"></span>
+            <span class="beam" style="--i:1"></span>
+            <span class="beam" style="--i:2"></span>
+            <span class="beam" style="--i:3"></span>
+            <span class="beam" style="--i:4"></span>
+            <span class="beam" style="--i:5"></span>
+            <span class="beam" style="--i:6"></span>
           </div>
-          <svg class="hero-ekg" viewBox="0 0 1200 200" preserveAspectRatio="none">
+
+          <svg class="hero-ekg" viewBox="0 0 1600 180" preserveAspectRatio="none">
             <defs>
-              <linearGradient id="ekgGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#3ed8ff" stop-opacity="0" />
-                <stop offset="20%" stop-color="#3ed8ff" />
-                <stop offset="50%" stop-color="#ff2e9a" />
-                <stop offset="80%" stop-color="#c6ff3d" />
-                <stop offset="100%" stop-color="#8a3fff" stop-opacity="0" />
+              <linearGradient id="ekgGrad" x1="0" x2="1">
+                <stop offset="0%" stop-color="#3ed8ff"/>
+                <stop offset="28%" stop-color="#c6ff3d"/>
+                <stop offset="55%" stop-color="#ff2e9a"/>
+                <stop offset="78%" stop-color="#8a3fff"/>
+                <stop offset="100%" stop-color="#3ed8ff"/>
               </linearGradient>
             </defs>
-            <path
-              class="ekg-line ekg-line-back"
-              d="M0,100 L80,100 L110,100 L130,40 L150,160 L170,100 L220,100 L250,100 L270,55 L290,145 L310,100 L380,100 L410,100 L430,30 L450,170 L470,100 L540,100 L570,100 L590,50 L610,150 L630,100 L700,100 L730,100 L750,45 L770,155 L790,100 L860,100 L890,100 L910,35 L930,165 L950,100 L1020,100 L1050,100 L1070,60 L1090,140 L1110,100 L1200,100"
-            />
-            <path
-              class="ekg-line ekg-line-front"
-              d="M0,100 L80,100 L110,100 L130,40 L150,160 L170,100 L220,100 L250,100 L270,55 L290,145 L310,100 L380,100 L410,100 L430,30 L450,170 L470,100 L540,100 L570,100 L590,50 L610,150 L630,100 L700,100 L730,100 L750,45 L770,155 L790,100 L860,100 L890,100 L910,35 L930,165 L950,100 L1020,100 L1050,100 L1070,60 L1090,140 L1110,100 L1200,100"
-            />
+            <path class="ekg-line ekg-line-back"
+              d="M0 98 H210 L250 98 L280 65 L318 135 L350 20 L392 154 L430 98 H650 L690 98 L720 70 L750 125 L790 38 L825 145 L865 98 H1110 L1145 98 L1175 70 L1205 125 L1245 38 L1282 145 L1320 98 H1600"/>
+            <path class="ekg-line ekg-line-front"
+              d="M0 98 H210 L250 98 L280 65 L318 135 L350 20 L392 154 L430 98 H650 L690 98 L720 70 L750 125 L790 38 L825 145 L865 98 H1110 L1145 98 L1175 70 L1205 125 L1245 38 L1282 145 L1320 98 H1600"/>
           </svg>
+
           <div class="hero-shards">
-            <div class="shard shard-1"></div>
-            <div class="shard shard-2"></div>
-            <div class="shard shard-3"></div>
-            <div class="shard shard-4"></div>
-            <div class="shard shard-5"></div>
+            <span class="shard shard-1"></span>
+            <span class="shard shard-2"></span>
+            <span class="shard shard-3"></span>
+            <span class="shard shard-4"></span>
+            <span class="shard shard-5"></span>
           </div>
+
           <div class="hero-melt">
-            <svg viewBox="0 0 400 120" preserveAspectRatio="none">
+            <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
               <defs>
-                <linearGradient id="meltGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#3ed8ff" />
-                  <stop offset="35%" stop-color="#ff2e9a" />
-                  <stop offset="65%" stop-color="#c6ff3d" />
-                  <stop offset="100%" stop-color="#8a3fff" />
+                <linearGradient id="meltGrad" x1="0" x2="1">
+                  <stop offset="0%" stop-color="#3ed8ff"/>
+                  <stop offset="24%" stop-color="#c6ff3d"/>
+                  <stop offset="52%" stop-color="#ff2e9a"/>
+                  <stop offset="78%" stop-color="#8a3fff"/>
+                  <stop offset="100%" stop-color="#3ed8ff"/>
                 </linearGradient>
               </defs>
-              <path
-                class="melt-drip melt-a"
-                d="M0,0 L400,0 L400,48 C360,62 340,38 300,55 C260,72 230,42 190,58 C150,74 120,44 80,60 C40,76 20,52 0,68 Z"
-              />
-              <path
-                class="melt-drip melt-b"
-                d="M0,0 L400,0 L400,32 C370,44 350,28 320,40 C290,52 260,30 230,42 C200,54 170,32 140,44 C110,56 80,34 50,46 C25,56 10,38 0,50 Z"
-              />
+              <path class="melt-drip melt-a" d="M0,0 H1440 V24 C1330,22 1270,65 1170,42 C1080,21 1020,72 920,45 C820,18 760,64 655,39 C550,14 500,75 390,44 C285,14 220,62 120,37 C72,25 36,29 0,42 Z"/>
+              <path class="melt-drip melt-b" d="M0,0 H1440 V10 C1300,40 1210,16 1100,44 C980,74 900,18 790,48 C680,78 590,18 480,48 C365,80 270,16 160,52 C95,73 46,62 0,70 Z"/>
             </svg>
           </div>
-          <div class="hero-cursor-prism" id="cursorPrism"></div>
+
+          <div class="hero-cursor-prism" id="cursorBlob"></div>
         </div>
         <div class="hero-grid"></div>
         <div class="hero-inner">
           <span class="eyebrow">Yedi Kalp. Tek Nabız.</span>
           <h1>CRUSH</h1>
           <p class="hero-tag">
-            İstanbul'un sokaklarında filizlenen, dünyayı eritmeye hazır yeni
-            nesil boy band. Elektronik pop ile r&amp;b'yi bir araya getiren
-            "liquid pop" sound'uyla sahneye çıkıyor.
+            Idol House Türkiye'nin finalinde bir araya gelen yedi kişilik yeni
+            nesil boyband. CRUSH, 31 Temmuz 2026'da yayımlanan ilk single'ı
+            <strong>"CRUSH!"</strong> ile resmi çıkışını yaptı.
           </p>
           <div class="hero-cta">
             <a href="#muzik" class="btn btn-solid">Şimdi Dinle</a>
@@ -124,20 +132,18 @@
       <div class="marquee-wrap">
         <div class="marquee" id="marquee">
           <span
-            ><em>ERİYORUM</em> — İlk Albüm 2026 CRUSH Yedi Kalp Tek Nabız
-            <em>ERİYORUM</em> — İlk Albüm 2026 CRUSH Yedi Kalp Tek Nabız</span
+            ><em>CRUSH!</em> — DEBUT SINGLE · 31.07.2026 · CRUSHERS · 12–13
+            EYLÜL İLK KONSER · MAXIMUM UNIQ AÇIKHAVA</span
           >
           <span
-            ><em>ERİYORUM</em> — İlk Albüm 2026 CRUSH Yedi Kalp Tek Nabız
-            <em>ERİYORUM</em> — İlk Albüm 2026 CRUSH Yedi Kalp Tek Nabız</span
+            ><em>CRUSH!</em> — DEBUT SINGLE · 31.07.2026 · CRUSHERS · 12–13
+            EYLÜL İLK KONSER · MAXIMUM UNIQ AÇIKHAVA</span
           >
         </div>
       </div>
 
       <!-- STORY -->
       <section class="story" id="hikaye">
-        <div class="section-accent"></div>
-        <div class="section-grid-bg"></div>
         <div class="section-pad">
           <div class="story-grid">
             <div class="story-visual reveal">
@@ -151,126 +157,136 @@
             </div>
             <div class="story-body">
               <span class="eyebrow">Hikayemiz</span>
-              <h2>CRUSH sadece bir <span>boy band</span> değil.</h2>
+              <h2 style="margin: 14px 0 26px">Idol House'tan CRUSH'a.</h2>
               <p class="reveal">
-                Her şey İstanbul'un ara sokaklarında, farklı şehirlerden gelen
-                yedi genç adamın aynı prova salonunda karşılaşmasıyla başladı.
-                <strong>Efe, Arda, Miraç, Oğuzhan, Batu, Barış ve Milan</strong
-                >, önce birer yabancıydı — sonra birer rakip, en sonunda ise
-                birbirinin en büyük destekçisi.
+                CRUSH;
+                <strong
+                  >Efe Şan, Arda Soydoğan, Miraç Fırat, Oğuzhan Çifçi, Batu
+                  Cengiz, Barış Yüksekkaya ve Milan Önder</strong
+                >'den oluşan yedi kişilik bir erkek müzik grubudur. Kadro, Idol
+                House Türkiye'nin 5 Temmuz 2026'daki büyük finalinin ardından
+                belirlendi.
               </p>
               <p class="reveal">
-                Kimi caz korosundan geldi, kimi sokak dansından, kimi ise yatak
-                odasında kaydettiği demo şarkılardan. Ortak noktaları tekti:
-                sesin insanı eritebileceğine olan inanç.
+                Aylar süren eğitim, değerlendirme ve sahne performanslarının
+                ardından seçilen üyeler CRUSH adı altında bir araya geldi.
+                Yarışma dönemindeki performanslar grubun resmi diskografisinin
+                parçası değil; ancak CRUSH'ın oluşum hikayesinin önemli bir
+                bölümünü oluşturuyor.
               </p>
               <p class="reveal">
-                CRUSH, elektronik dokuları r&amp;b'nin sıcaklığıyla harmanlayan
-                kendi "liquid pop" formatını kurdu. Bu yapay bir çıkış değil —
-                yedi farklı sesin, tek bir nabza dönüşme hikayesi.
+                Grup, kendi adını taşıyan ilk single'ı
+                <strong>"CRUSH!"</strong> ile 31 Temmuz 2026'da resmi çıkışını
+                yaptı. İlk konserleri ise 12 ve 13 Eylül 2026'da İstanbul
+                Maximum Uniq Açıkhava'da gerçekleşecek.
               </p>
-              <div class="story-stats reveal">
-                <div class="story-stat">
-                  <span class="story-stat-num">07</span>
-                  <span class="story-stat-label">Üye</span>
-                </div>
-                <div class="story-stat">
-                  <span class="story-stat-num">01</span>
-                  <span class="story-stat-label">Albüm</span>
-                </div>
-                <div class="story-stat">
-                  <span class="story-stat-num">∞</span>
-                  <span class="story-stat-label">Nabız</span>
-                </div>
-              </div>
             </div>
           </div>
         </div>
+        <svg
+          class="wave-divider"
+          viewBox="0 0 1440 120"
+          preserveAspectRatio="none"
+        >
+          <path
+            fill="#08080b"
+            d="M0,60 C 300,110 900,10 1440,60 L1440,120 L0,120 Z"
+          />
+        </svg>
       </section>
 
       <!-- MUSIC -->
       <section class="music" id="muzik">
-        <div class="section-accent"></div>
-        <div class="section-grid-bg"></div>
         <div class="section-pad">
           <div class="section-head reveal">
-            <span class="eyebrow">Müzik</span>
-            <h2>CRUSH'ın sesinde <span>eriyin.</span></h2>
-            <p>İlk albüm ERİYORUM'dan öne çıkan parçalar ve single'lar.</p>
+            <span class="eyebrow">Müzik & Performanslar</span>
+            <h2>İlk şarkıdan final sahnesine.</h2>
+            <p>
+              CRUSH'ın henüz bir albümü yok. Resmi diskografide şu an "CRUSH!"
+              yer alıyor; Idol House final içeriklerini de grubun başlangıç
+              arşivi olarak burada topluyoruz.
+            </p>
           </div>
           <div class="music-scroller" id="musicScroller">
-            <div class="track-card" data-num="01">
+            <a
+              class="track-card"
+              href="https://www.youtube.com/watch?v=aKGCXYX7jN8"
+              target="_blank"
+              rel="noopener"
+              data-num="01"
+            >
               <div
-                class="cover"
+                class="cover cover-image"
                 style="
-                  background: linear-gradient(
-                    145deg,
-                    #e9edf3,
-                    #7d8296 70%
-                  );
+                  background-image: url(&quot;https://i.ytimg.com/vi/aKGCXYX7jN8/maxresdefault.jpg&quot;);
                 "
               >
                 <div class="play-badge">▶</div>
               </div>
-              <span class="track-num">01 · Albüm</span>
-              <div class="track-title">Eriyorum</div>
-              <div class="track-sub">ERİYORUM</div>
-            </div>
-            <div class="track-card" data-num="02">
+              <span class="track-num">01 · Debut Single</span>
+              <div class="track-title">CRUSH!</div>
+              <div class="track-sub">31 Temmuz 2026 · Resmi çıkış şarkısı</div>
+            </a>
+
+            <a
+              class="track-card"
+              href="https://www.youtube.com/watch?v=3mx3MVOKvSA"
+              target="_blank"
+              rel="noopener"
+              data-num="02"
+            >
               <div
-                class="cover"
-                style="background: linear-gradient(145deg, #ff9db1, #ff3864 70%)"
+                class="cover cover-image"
+                style="
+                  background-image: url(&quot;https://i.ytimg.com/vi/3mx3MVOKvSA/maxresdefault.jpg&quot;);
+                "
               >
                 <div class="play-badge">▶</div>
               </div>
-              <span class="track-num">02 · Single</span>
-              <div class="track-title">Nabız</div>
-              <div class="track-sub">2026</div>
-            </div>
-            <div class="track-card" data-num="03">
+              <span class="track-num">02 · Idol House Final</span>
+              <div class="track-title">Büyük Final</div>
+              <div class="track-sub">
+                Final gecesi ve performanslar · 5 Temmuz 2026
+              </div>
+            </a>
+
+            <a
+              class="track-card"
+              href="https://www.youtube.com/watch?v=RUZk8zbGGjc"
+              target="_blank"
+              rel="noopener"
+              data-num="03"
+            >
               <div
-                class="cover"
-                style="background: linear-gradient(145deg, #c7bcff, #8a6bff 70%)"
+                class="cover cover-image"
+                style="
+                  background-image: url(&quot;https://i.ytimg.com/vi/RUZk8zbGGjc/maxresdefault.jpg&quot;);
+                "
               >
                 <div class="play-badge">▶</div>
               </div>
-              <span class="track-num">03 · Single</span>
-              <div class="track-title">Elektrik Akımı</div>
-              <div class="track-sub">2026</div>
-            </div>
-            <div class="track-card" data-num="04">
-              <div
-                class="cover"
-                style="background: linear-gradient(145deg, #ffe08a, #e08a2f 70%)"
-              >
+              <span class="track-num">03 · Final Performansı</span>
+              <div class="track-title">FE!N</div>
+              <div class="track-sub">Idol House final performans arşivi</div>
+            </a>
+
+            <a
+              class="track-card"
+              href="https://www.youtube.com/playlist?list=PLCAHR4XYey74oDlwI6imDwa4bgVQJmlJn"
+              target="_blank"
+              rel="noopener"
+              data-num="04"
+            >
+              <div class="cover performance-cover">
+                <span class="performance-mark">IDOL<br />HOUSE</span>
                 <div class="play-badge">▶</div>
               </div>
-              <span class="track-num">04 · Single</span>
-              <div class="track-title">Sokak Lambası</div>
-              <div class="track-sub">2025</div>
-            </div>
-            <div class="track-card" data-num="05">
-              <div
-                class="cover"
-                style="background: linear-gradient(145deg, #9df7d8, #2fc7a1 70%)"
-              >
-                <div class="play-badge">▶</div>
+              <span class="track-num">04 · Performans Arşivi</span>
+              <div class="track-title">Idol House Performansları</div>
+              <div class="track-sub">
+                CRUSH üyelerinin yarışma dönemi sahneleri
               </div>
-              <span class="track-num">05 · Single</span>
-              <div class="track-title">Yerçekimi Yok</div>
-              <div class="track-sub">2025</div>
-            </div>
-            <div class="track-card" data-num="06">
-              <div
-                class="cover"
-                style="background: linear-gradient(145deg, #d6d9e0, #3a3f4d 70%)"
-              >
-                <div class="play-badge">▶</div>
-              </div>
-              <span class="track-num">06 · Albüm</span>
-              <div class="track-title">Gece Modu</div>
-              <div class="track-sub">ERİYORUM</div>
-            </div>
+            </a>
           </div>
           <div class="scroller-controls">
             <button
@@ -301,12 +317,10 @@
       <!-- Her üyenin fotoğrafını eklemek için ilgili <img> etiketindeki src="" yolunu güncelle.
        Örn: images/efe.jpg (dosyaları "images" klasörüne koy) -->
       <section class="members" id="uyeler">
-        <div class="section-accent"></div>
-        <div class="section-grid-bg"></div>
         <div class="section-pad">
           <div class="section-head reveal">
             <span class="eyebrow">Yedisi Bir Arada</span>
-            <h2>CRUSH üyeleriyle <span>tanış.</span></h2>
+            <h2>CRUSH üyeleriyle tanış.</h2>
             <p>
               Yedi farklı ses, yedi farklı enerji — tek bir nabızda buluşuyor.
             </p>
@@ -323,11 +337,11 @@
                   />
                   <span>E</span>
                 </div>
-                <div class="member-role">Lider · Ana Vokal</div>
+                <div class="member-role">CRUSH Üyesi</div>
                 <div class="member-name">Efe Şan</div>
                 <div class="member-desc">
-                  Efe sahneye çıktığı an her şeyi sakinleştirir — sesi bir söz,
-                  duruşu bir güven.
+                  Idol House Türkiye final kadrosundan seçilerek CRUSH'ın yedi
+                  üyesinden biri oldu.
                 </div>
                 <div class="member-social">
                   <a href="#" aria-label="Instagram">IG</a
@@ -346,11 +360,11 @@
                   />
                   <span>A</span>
                 </div>
-                <div class="member-role">Rap · Söz Yazarı</div>
+                <div class="member-role">CRUSH Üyesi</div>
                 <div class="member-name">Arda Soydoğan</div>
                 <div class="member-desc">
-                  Arda'nın kalemi keskin, flow'u akışkan; her satırda sokağın
-                  enerjisini taşır.
+                  Idol House Türkiye final kadrosundan seçilerek CRUSH'ın yedi
+                  üyesinden biri oldu.
                 </div>
                 <div class="member-social">
                   <a href="#" aria-label="Instagram">IG</a
@@ -369,11 +383,11 @@
                   />
                   <span>M</span>
                 </div>
-                <div class="member-role">Vokal</div>
+                <div class="member-role">CRUSH Üyesi</div>
                 <div class="member-name">Miraç Fırat</div>
                 <div class="member-desc">
-                  Miraç'ın sesi bir yanık gibi — önce ısıtır, sonra kalpte iz
-                  bırakır.
+                  Idol House Türkiye final kadrosundan seçilerek CRUSH'ın yedi
+                  üyesinden biri oldu.
                 </div>
                 <div class="member-social">
                   <a href="#" aria-label="Instagram">IG</a
@@ -392,11 +406,11 @@
                   />
                   <span>O</span>
                 </div>
-                <div class="member-role">Dans · Vokal</div>
+                <div class="member-role">CRUSH Üyesi</div>
                 <div class="member-name">Oğuzhan Çifçi</div>
                 <div class="member-desc">
-                  Oğuzhan sahnede bir akım gibi hareket eder; her adımı hesaplı,
-                  her bakışı içten.
+                  Idol House Türkiye final kadrosundan seçilerek CRUSH'ın yedi
+                  üyesinden biri oldu.
                 </div>
                 <div class="member-social">
                   <a href="#" aria-label="Instagram">IG</a
@@ -415,11 +429,11 @@
                   />
                   <span>B</span>
                 </div>
-                <div class="member-role">Vizüel · Vokal</div>
+                <div class="member-role">CRUSH Üyesi</div>
                 <div class="member-name">Batu Cengiz</div>
                 <div class="member-desc">
-                  Batu bir bakışta akılda kalır; sahnedeki her karesi CRUSH'ın
-                  imzası gibidir.
+                  Idol House Türkiye final kadrosundan seçilerek CRUSH'ın yedi
+                  üyesinden biri oldu.
                 </div>
                 <div class="member-social">
                   <a href="#" aria-label="Instagram">IG</a
@@ -438,11 +452,11 @@
                   />
                   <span>B</span>
                 </div>
-                <div class="member-role">Rap · Dans</div>
+                <div class="member-role">CRUSH Üyesi</div>
                 <div class="member-name">Barış Yüksekkaya</div>
                 <div class="member-desc">
-                  Barış'ın enerjisi bulaşıcıdır; ritmi ele geçirdiği an sahne
-                  onun olur.
+                  Idol House Türkiye final kadrosundan seçilerek CRUSH'ın yedi
+                  üyesinden biri oldu.
                 </div>
                 <div class="member-social">
                   <a href="#" aria-label="Instagram">IG</a
@@ -461,11 +475,11 @@
                   />
                   <span>M</span>
                 </div>
-                <div class="member-role">Maknae · Vokal</div>
+                <div class="member-role">CRUSH Üyesi</div>
                 <div class="member-name">Milan Önder</div>
                 <div class="member-desc">
-                  Grubun en genci, en cesuru — Milan'ın enerjisi CRUSH'ı ayakta
-                  tutan nabız.
+                  Idol House Türkiye final kadrosundan seçilerek CRUSH'ın yedi
+                  üyesinden biri oldu.
                 </div>
                 <div class="member-social">
                   <a href="#" aria-label="Instagram">IG</a
@@ -479,105 +493,205 @@
 
       <!-- VIDEO / WORLD -->
       <section class="world" id="video">
-        <div class="section-accent"></div>
-        <div class="section-grid-bg"></div>
         <div class="section-pad">
           <div class="section-head reveal">
             <span class="eyebrow">CRUSH Evreni</span>
-            <h2>Sahnenin ötesine <span>göz at.</span></h2>
-            <p>Prova kamerası, sahne arkası anlar ve vlog'lar.</p>
+            <h2>Videoları siteden çıkmadan izle.</h2>
+            <p>
+              CRUSH'ın resmi YouTube kanalındaki içerikler artık doğrudan sayfa
+              içinde oynatılıyor. Oynat, durdur veya tam ekrana geç.
+            </p>
           </div>
-          <div class="world-grid">
-            <div
-              class="video-tile reveal"
-              style="--vg1: #3a3f4d; --vg2: #0d0e12"
-            >
-              <div class="grad"></div>
-              <div class="play"><div class="play-btn">▶</div></div>
-              <div class="video-label">Prova Kamerası</div>
-            </div>
-            <div
-              class="video-tile reveal"
-              style="--vg1: #5c2033; --vg2: #0d0e12"
-            >
-              <div class="grad"></div>
-              <div class="play"><div class="play-btn">▶</div></div>
-              <div class="video-label">Sahne Arkası</div>
-            </div>
-            <!-- Video eklemek için: aşağıdaki <source src=""> yolunu kendi video dosyanla değiştir.
-             Örn: videos/vlog.mp4 (dosyayı crush.html ile aynı klasördeki "videos" içine koy).
-             İsteğe bağlı kapak görseli için <video poster="..."> alanına bir resim yolu ekleyebilirsin. -->
-            <div
-              class="video-tile reveal"
-              style="--vg1: #332b5c; --vg2: #0d0e12"
-            >
-              <div class="grad"></div>
-              <video
-                class="video-media"
-                playsinline
-                preload="metadata"
-                onerror="this.style.display = 'none'"
-              >
-                <source src="videos/vlog.mp4" type="video/mp4" />
-              </video>
-              <div class="play" onclick="playTileVideo(this)">
-                <div class="play-btn">▶</div>
+          <div class="world-grid video-embed-grid">
+            <article class="video-embed-card reveal" style="--video-accent:#3ed8ff">
+              <div class="video-frame">
+                <iframe
+                  src="https://www.youtube-nocookie.com/embed/TfrZND4ge6Q?rel=0"
+                  title="DEBUT PHOTOSHOOT BACKSTAGE | CRUSH"
+                  loading="lazy"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerpolicy="strict-origin-when-cross-origin"
+                  allowfullscreen></iframe>
               </div>
-              <div class="video-label">Vlog #04</div>
-            </div>
-            <div
-              class="video-tile reveal"
-              style="--vg1: #5c4a20; --vg2: #0d0e12"
-            >
-              <div class="grad"></div>
-              <div class="play"><div class="play-btn">▶</div></div>
-              <div class="video-label">Nabız — Klip</div>
-            </div>
+              <div class="video-card-info">
+                <span>BACKSTAGE</span>
+                <h3>Debut Photoshoot Backstage</h3>
+                <a href="https://www.youtube.com/watch?v=TfrZND4ge6Q" target="_blank" rel="noopener">YouTube'da aç ↗</a>
+              </div>
+            </article>
+
+            <article class="video-embed-card reveal" style="--video-accent:#ff2e9a">
+              <div class="video-frame">
+                <iframe
+                  src="https://www.youtube-nocookie.com/embed/aKGCXYX7jN8?rel=0"
+                  title="CRUSH - CRUSH! Official Music Video"
+                  loading="lazy"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerpolicy="strict-origin-when-cross-origin"
+                  allowfullscreen></iframe>
+              </div>
+              <div class="video-card-info">
+                <span>OFFICIAL MV</span>
+                <h3>CRUSH! · Official Music Video</h3>
+                <a href="https://www.youtube.com/watch?v=aKGCXYX7jN8" target="_blank" rel="noopener">YouTube'da aç ↗</a>
+              </div>
+            </article>
+
+            <article class="video-embed-card reveal" style="--video-accent:#c6ff3d">
+              <div class="video-frame">
+                <iframe
+                  src="https://www.youtube-nocookie.com/embed/Vvjcw_8jeW0?rel=0"
+                  title="CRUSH! MV Reaction"
+                  loading="lazy"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerpolicy="strict-origin-when-cross-origin"
+                  allowfullscreen></iframe>
+              </div>
+              <div class="video-card-info">
+                <span>REACTION</span>
+                <h3>CRUSH! · MV Reaction</h3>
+                <a href="https://www.youtube.com/watch?v=Vvjcw_8jeW0" target="_blank" rel="noopener">YouTube'da aç ↗</a>
+              </div>
+            </article>
+
+            <article class="video-embed-card reveal" style="--video-accent:#8a6bff">
+              <div class="video-frame">
+                <iframe
+                  src="https://www.youtube-nocookie.com/embed/taf_wvjg2M4?rel=0"
+                  title="CRUSH! MV Vlog"
+                  loading="lazy"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerpolicy="strict-origin-when-cross-origin"
+                  allowfullscreen></iframe>
+              </div>
+              <div class="video-card-info">
+                <span>MV VLOG</span>
+                <h3>CRUSH! · MV Vlog</h3>
+                <a href="https://www.youtube.com/watch?v=taf_wvjg2M4" target="_blank" rel="noopener">YouTube'da aç ↗</a>
+              </div>
+            </article>
           </div>
         </div>
       </section>
 
+      <!-- CONTENT CALENDAR -->
+      <section class="calendar-section" id="takvim">
+        <div class="calendar-grid-bg" aria-hidden="true"></div>
+        <div class="section-pad">
+          <div class="calendar-heading reveal">
+            <div>
+              <span class="eyebrow">Ağustos İçerik Takvimi</span>
+              <h2>Ajandayı aç. CRUSH geliyor.</h2>
+              <p>İki günde bir yeni içerik — vlog, dans, challenge ve RUSH.</p>
+            </div>
+            <div class="calendar-month-stamp" aria-label="Ağustos 2026">
+              <small>2026</small>
+              <strong>AĞU</strong>
+              <span>11 → 21</span>
+            </div>
+          </div>
+
+          <div class="schedule-board">
+            <article class="schedule-card schedule-white is-today reveal">
+              <div class="schedule-pin" aria-hidden="true"></div>
+              <div class="schedule-topline"><span class="schedule-status">BUGÜN</span><span>01 / 06</span></div>
+              <div class="schedule-date"><strong>11</strong><div><span>AĞUSTOS</span><b>SALI</b></div></div>
+              <div class="schedule-copy"><span>CRUSH!</span><h3>Lansman Vlog</h3></div>
+              <div class="schedule-foot">Yeni dönem başlıyor <span>↗</span></div>
+            </article>
+
+            <article class="schedule-card schedule-black reveal">
+              <div class="schedule-pin" aria-hidden="true"></div>
+              <div class="schedule-topline"><span>YAKINDA</span><span>02 / 06</span></div>
+              <div class="schedule-date"><strong>13</strong><div><span>AĞUSTOS</span><b>PERŞEMBE</b></div></div>
+              <div class="schedule-copy"><span>CRUSH!</span><h3>Dans Pratik Videosu</h3></div>
+              <div class="schedule-foot">Practice room <span>↗</span></div>
+            </article>
+
+            <article class="schedule-card schedule-ice reveal">
+              <div class="schedule-pin" aria-hidden="true"></div>
+              <div class="schedule-topline"><span>YAKINDA</span><span>03 / 06</span></div>
+              <div class="schedule-date"><strong>15</strong><div><span>AĞUSTOS</span><b>CUMARTESİ</b></div></div>
+              <div class="schedule-copy"><span>CRUSH!</span><h3>Gözü Kapalı Dans Challenge</h3></div>
+              <div class="schedule-foot">Challenge mode <span>↗</span></div>
+            </article>
+
+            <article class="schedule-card schedule-yellow reveal">
+              <div class="schedule-pin" aria-hidden="true"></div>
+              <div class="schedule-topline"><span>YAKINDA</span><span>04 / 06</span></div>
+              <div class="schedule-date"><strong>17</strong><div><span>AĞUSTOS</span><b>PAZARTESİ</b></div></div>
+              <div class="schedule-copy"><span>RUSH</span><h3>Bölüm 1</h3></div>
+              <div class="schedule-foot">Yeni seri <span>↗</span></div>
+            </article>
+
+            <article class="schedule-card schedule-blue reveal">
+              <div class="schedule-pin" aria-hidden="true"></div>
+              <div class="schedule-topline"><span>YAKINDA</span><span>05 / 06</span></div>
+              <div class="schedule-date"><strong>19</strong><div><span>AĞUSTOS</span><b>ÇARŞAMBA</b></div></div>
+              <div class="schedule-copy"><span>CRUSH!</span><h3>Ritme Göre Dans</h3></div>
+              <div class="schedule-foot">Beat challenge <span>↗</span></div>
+            </article>
+
+            <article class="schedule-card schedule-white reveal">
+              <div class="schedule-pin" aria-hidden="true"></div>
+              <div class="schedule-topline"><span>YAKINDA</span><span>06 / 06</span></div>
+              <div class="schedule-date"><strong>21</strong><div><span>AĞUSTOS</span><b>CUMA</b></div></div>
+              <div class="schedule-copy"><span>CRUSH!</span><h3>Rolleri Değiştirdik Dans Challenge</h3></div>
+              <div class="schedule-foot">Final drop <span>↗</span></div>
+            </article>
+          </div>
+
+          <div class="calendar-source-note reveal">
+            <img src="images/etkinlik-takvimi.jpg" alt="CRUSH'ın paylaştığı orijinal Ağustos 2026 içerik takvimi" />
+            <div><span>ORİJİNAL DUYURU</span><p>CRUSH'ın yayınladığı takvim görselini görmek için üzerine gel.</p></div>
+          </div>
+        </div>
+      </section>
+
+
       <!-- TOUR -->
       <section class="tour" id="konser">
-        <div class="section-accent"></div>
-        <div class="section-grid-bg"></div>
         <div class="section-pad">
           <div class="section-head reveal">
-            <span class="eyebrow">Konserler</span>
-            <h2>CRUSH <span>şehrine geliyor.</span></h2>
+            <span class="eyebrow">İlk Konserler</span>
+            <h2>CRUSH sahneye çıkıyor.</h2>
+            <p>
+              Grubun ilk konserleri iki gece üst üste İstanbul Maximum Uniq
+              Açıkhava'da gerçekleşecek.
+            </p>
           </div>
           <div class="tour-list">
             <div class="tour-row reveal">
-              <div class="tour-date">14 MAR 2026</div>
+              <div class="tour-date">12 EYL 2026 · 21:00</div>
               <div>
                 <div class="tour-city">İstanbul</div>
-                <div class="tour-venue">Volkswagen Arena</div>
+                <div class="tour-venue">
+                  Maximum Uniq Açıkhava · İlk Konser / 1. Gece
+                </div>
               </div>
-              <a href="#" class="btn btn-solid">Bilet Al</a>
+              <a
+                href="https://www.bubilet.com.tr/istanbul/etkinlik/crush"
+                target="_blank"
+                rel="noopener"
+                class="btn btn-ghost sold-out"
+                >Tükendi · Etkinliği Gör</a
+              >
             </div>
             <div class="tour-row reveal">
-              <div class="tour-date">21 MAR 2026</div>
+              <div class="tour-date">13 EYL 2026 · 21:00</div>
               <div>
-                <div class="tour-city">Ankara</div>
-                <div class="tour-venue">ODTÜ Vişnelik</div>
+                <div class="tour-city">İstanbul</div>
+                <div class="tour-venue">
+                  Maximum Uniq Açıkhava · İlk Konser / 2. Gece
+                </div>
               </div>
-              <a href="#" class="btn btn-solid">Bilet Al</a>
-            </div>
-            <div class="tour-row reveal">
-              <div class="tour-date">04 NİS 2026</div>
-              <div>
-                <div class="tour-city">İzmir</div>
-                <div class="tour-venue">Sanat Fabrikası</div>
-              </div>
-              <a href="#" class="btn btn-solid">Bilet Al</a>
-            </div>
-            <div class="tour-row reveal">
-              <div class="tour-date">18 NİS 2026</div>
-              <div>
-                <div class="tour-city">Bursa</div>
-                <div class="tour-venue">Merinos AKKM</div>
-              </div>
-              <a href="#" class="btn btn-solid">Bilet Al</a>
+              <a
+                href="https://www.bubilet.com.tr/istanbul/etkinlik/crush"
+                target="_blank"
+                rel="noopener"
+                class="btn btn-ghost sold-out"
+                >Tükendi · Etkinliği Gör</a
+              >
             </div>
           </div>
         </div>
@@ -585,67 +699,77 @@
 
       <!-- SOCIAL -->
       <section class="social" id="sosyal">
-        <div class="section-accent"></div>
-        <div class="social-beams" aria-hidden="true">
-          <span></span><span></span><span></span><span></span><span></span>
-        </div>
         <div class="section-pad">
           <div
             class="section-head reveal"
             style="margin-left: auto; margin-right: auto"
           >
             <span class="eyebrow">CRUSH'a Katıl</span>
-            <h2>Tüm platformlarda <span>@crushboyband</span></h2>
+            <h2>CRUSH'ı resmi hesaplarından takip et</h2>
           </div>
           <div class="social-icons reveal">
-            <a href="#" aria-label="Instagram">IG</a>
+            <a
+              href="https://www.instagram.com/wearecrushboys/"
+              target="_blank"
+              rel="noopener"
+              aria-label="Instagram"
+              >IG</a
+            >
             <a href="#" aria-label="TikTok">TT</a>
-            <a href="#" aria-label="YouTube">YT</a>
+            <a
+              href="https://www.youtube.com/channel/UCdKIMZMJeZtLwitpv0O_U3Q"
+              target="_blank"
+              rel="noopener"
+              aria-label="YouTube"
+              >YT</a
+            >
             <a href="#" aria-label="Spotify">SP</a>
-            <a href="#" aria-label="X">X</a>
+            <a
+              href="https://x.com/wearecrushboys"
+              target="_blank"
+              rel="noopener"
+              aria-label="X"
+              >X</a
+            >
           </div>
         </div>
       </section>
 
       <!-- NEWS -->
       <section class="news" id="haberler">
-        <div class="section-accent"></div>
-        <div class="section-grid-bg"></div>
         <div class="section-pad">
           <div class="section-head reveal">
-            <span class="eyebrow">Haberler</span>
-            <h2>Kamera flaşları <span>CRUSH'a çevrildi</span></h2>
+            <span class="eyebrow">Zaman Çizelgesi</span>
+            <h2>CRUSH'ın ilk dönemi.</h2>
             <p>
-              Albüm çıkışlarından sahne haberlerine, en son gelişmeler burada.
+              Uydurma haber başlıkları yerine grubun doğrulanabilen ilk
+              kilometre taşları.
             </p>
           </div>
           <div class="news-grid">
             <div class="news-card reveal">
-              <div class="news-meta"><em>12 Şubat, 2026</em> · Pop Sahne</div>
-              <h3>CRUSH, ilk albümü "ERİYORUM"u tanıttı</h3>
+              <div class="news-meta"><em>05 Temmuz, 2026</em> · Idol House</div>
+              <h3>CRUSH'ın yedi kişilik kadrosu büyük finalde belirlendi</h3>
               <p>
-                Yedi kişilik yeni nesil boy band, uzun zamandır beklenen ilk
-                stüdyo albümüyle sahneye tam anlamıyla adım attı.
+                Efe, Arda, Miraç, Oğuzhan, Batu, Barış ve Milan; finalin
+                ardından CRUSH adı altında bir araya geldi.
               </p>
             </div>
             <div class="news-card reveal">
-              <div class="news-meta">
-                <em>28 Ocak, 2026</em> · Müzik Gündemi
-              </div>
-              <h3>"Nabız" single'ı ilk haftasında zirveye yerleşti</h3>
+              <div class="news-meta"><em>31 Temmuz, 2026</em> · Debut</div>
+              <h3>İlk single: “CRUSH!”</h3>
               <p>
-                Grubun ikinci single'ı, akışkan prodüksiyonu ve sürükleyici
-                koreografisiyle dinleyiciyle hızla buluştu.
+                Grup, kendi adını taşıyan ilk şarkısıyla resmi çıkışını yaptı;
+                resmi müzik videosu da CRUSH YouTube kanalında yayımlandı.
               </p>
             </div>
             <div class="news-card reveal">
-              <div class="news-meta">
-                <em>03 Ocak, 2026</em> · Sahne Dergisi
-              </div>
-              <h3>CRUSH, 2026 turne takvimini duyurdu</h3>
+              <div class="news-meta"><em>12–13 Eylül, 2026</em> · İstanbul</div>
+              <h3>İlk konserler Maximum Uniq Açıkhava'da</h3>
               <p>
-                İstanbul'dan başlayıp dört şehri kapsayacak turne, grubun sahne
-                performansını ilk kez canlı sunacak.
+                İki gecelik ilk konser programı 21:00'da başlayacak. Her iki
+                tarih için biletler etkinlik sayfasında tükendi olarak
+                görünüyor.
               </p>
             </div>
           </div>
@@ -684,73 +808,38 @@
       );
       revealEls.forEach((el) => io.observe(el));
 
-      const reduceMotion = window.matchMedia(
-        "(prefers-reduced-motion: reduce)",
-      ).matches;
-
-      // cursor-reactive prism (lerp toward mouse position within hero)
+      // cursor-reactive blob (lerp toward mouse position within hero)
       const hero = document.querySelector(".hero");
-      const cursorPrism = document.getElementById("cursorPrism");
+      const cursorBlob = document.getElementById("cursorBlob");
       let targetX = window.innerWidth / 2,
         targetY = window.innerHeight / 2;
       let curX = targetX,
         curY = targetY;
-      let tiltX = 0,
-        tiltY = 0;
+      let reduceMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
 
-      if (hero && cursorPrism && !reduceMotion) {
+      if (hero && cursorBlob && !reduceMotion) {
         hero.addEventListener("mousemove", (e) => {
           const rect = hero.getBoundingClientRect();
           targetX = e.clientX - rect.left;
           targetY = e.clientY - rect.top;
-          tiltX = (e.clientX - rect.left) / rect.width - 0.5;
-          tiltY = (e.clientY - rect.top) / rect.height - 0.5;
         });
-        function animatePrism() {
-          curX += (targetX - curX) * 0.07;
-          curY += (targetY - curY) * 0.07;
-          cursorPrism.style.transform = `translate(${curX - 28}px, ${curY - 28}px) rotateX(${-tiltY * 24}deg) rotateY(${tiltX * 24}deg)`;
-          requestAnimationFrame(animatePrism);
+        function animateBlob() {
+          curX += (targetX - curX) * 0.06;
+          curY += (targetY - curY) * 0.06;
+          cursorBlob.style.transform = `translate(${curX - cursorBlob.offsetWidth / 2}px, ${curY - cursorBlob.offsetHeight / 2}px)`;
+          requestAnimationFrame(animateBlob);
         }
+        // init default position center of hero
         const rect = hero.getBoundingClientRect();
         targetX = rect.width / 2;
         targetY = rect.height / 2;
         curX = targetX;
         curY = targetY;
-        animatePrism();
+        animateBlob();
       }
 
-      // hero beam pulse sync
-      const beams = document.querySelectorAll(".hero-beams .beam");
-      if (beams.length && !reduceMotion) {
-        let beat = 0;
-        setInterval(() => {
-          beat = (beat + 1) % 7;
-          beams.forEach((b, i) => {
-            b.classList.toggle("beat", i === beat);
-          });
-        }, 420);
-      }
-
-      // play an embedded <video> inside a video-tile when its play button is clicked
-      function playTileVideo(playOverlay) {
-        const tile = playOverlay.closest(".video-tile");
-        const video = tile ? tile.querySelector(".video-media") : null;
-        if (!video || !video.querySelector("source").getAttribute("src"))
-          return;
-        video.setAttribute("controls", "");
-        video.muted = false;
-        video.play().catch(() => {});
-        tile.classList.add("is-playing");
-
-        // video bitince kutuyu eski haline (karartma + oynat ikonu) döndür
-        video.onended = () => {
-          tile.classList.remove("is-playing");
-          video.removeAttribute("controls");
-          video.currentTime = 0;
-          video.muted = true;
-        };
-      }
 
       // member card subtle tilt
       document.querySelectorAll(".member-card").forEach((card) => {
