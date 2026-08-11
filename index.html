@@ -1,0 +1,771 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CRUSH — Yedi Kalp. Tek Nabız.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800;900&family=Manrope:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <svg class="noise" xmlns="http://www.w3.org/2000/svg">
+      <filter id="grain">
+        <feTurbulence
+          type="fractalNoise"
+          baseFrequency="0.85"
+          numOctaves="2"
+          stitchTiles="stitch"
+        />
+      </filter>
+      <rect width="100%" height="100%" filter="url(#grain)" />
+    </svg>
+
+    <header id="site-header">
+      <a href="#top" class="logo">CRUSH</a>
+      <nav>
+        <ul>
+          <li><a href="#hikaye">Hikaye</a></li>
+          <li><a href="#muzik">Müzik</a></li>
+          <li><a href="#uyeler">Üyeler</a></li>
+          <li><a href="#video">Video</a></li>
+          <li><a href="#konser">Konser</a></li>
+          <li><a href="#sosyal">Sosyal</a></li>
+          <li><a href="#haberler">Haberler</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main id="top">
+      <!-- HERO -->
+      <section class="hero">
+        <div class="hero-atmosphere" aria-hidden="true">
+          <div class="hero-beams">
+            <span class="beam" style="--i: 0"></span>
+            <span class="beam" style="--i: 1"></span>
+            <span class="beam" style="--i: 2"></span>
+            <span class="beam" style="--i: 3"></span>
+            <span class="beam" style="--i: 4"></span>
+            <span class="beam" style="--i: 5"></span>
+            <span class="beam" style="--i: 6"></span>
+          </div>
+          <svg class="hero-ekg" viewBox="0 0 1200 200" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="ekgGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#3ed8ff" stop-opacity="0" />
+                <stop offset="20%" stop-color="#3ed8ff" />
+                <stop offset="50%" stop-color="#ff2e9a" />
+                <stop offset="80%" stop-color="#c6ff3d" />
+                <stop offset="100%" stop-color="#8a3fff" stop-opacity="0" />
+              </linearGradient>
+            </defs>
+            <path
+              class="ekg-line ekg-line-back"
+              d="M0,100 L80,100 L110,100 L130,40 L150,160 L170,100 L220,100 L250,100 L270,55 L290,145 L310,100 L380,100 L410,100 L430,30 L450,170 L470,100 L540,100 L570,100 L590,50 L610,150 L630,100 L700,100 L730,100 L750,45 L770,155 L790,100 L860,100 L890,100 L910,35 L930,165 L950,100 L1020,100 L1050,100 L1070,60 L1090,140 L1110,100 L1200,100"
+            />
+            <path
+              class="ekg-line ekg-line-front"
+              d="M0,100 L80,100 L110,100 L130,40 L150,160 L170,100 L220,100 L250,100 L270,55 L290,145 L310,100 L380,100 L410,100 L430,30 L450,170 L470,100 L540,100 L570,100 L590,50 L610,150 L630,100 L700,100 L730,100 L750,45 L770,155 L790,100 L860,100 L890,100 L910,35 L930,165 L950,100 L1020,100 L1050,100 L1070,60 L1090,140 L1110,100 L1200,100"
+            />
+          </svg>
+          <div class="hero-shards">
+            <div class="shard shard-1"></div>
+            <div class="shard shard-2"></div>
+            <div class="shard shard-3"></div>
+            <div class="shard shard-4"></div>
+            <div class="shard shard-5"></div>
+          </div>
+          <div class="hero-melt">
+            <svg viewBox="0 0 400 120" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="meltGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#3ed8ff" />
+                  <stop offset="35%" stop-color="#ff2e9a" />
+                  <stop offset="65%" stop-color="#c6ff3d" />
+                  <stop offset="100%" stop-color="#8a3fff" />
+                </linearGradient>
+              </defs>
+              <path
+                class="melt-drip melt-a"
+                d="M0,0 L400,0 L400,48 C360,62 340,38 300,55 C260,72 230,42 190,58 C150,74 120,44 80,60 C40,76 20,52 0,68 Z"
+              />
+              <path
+                class="melt-drip melt-b"
+                d="M0,0 L400,0 L400,32 C370,44 350,28 320,40 C290,52 260,30 230,42 C200,54 170,32 140,44 C110,56 80,34 50,46 C25,56 10,38 0,50 Z"
+              />
+            </svg>
+          </div>
+          <div class="hero-cursor-prism" id="cursorPrism"></div>
+        </div>
+        <div class="hero-grid"></div>
+        <div class="hero-inner">
+          <span class="eyebrow">Yedi Kalp. Tek Nabız.</span>
+          <h1>CRUSH</h1>
+          <p class="hero-tag">
+            İstanbul'un sokaklarında filizlenen, dünyayı eritmeye hazır yeni
+            nesil boy band. Elektronik pop ile r&amp;b'yi bir araya getiren
+            "liquid pop" sound'uyla sahneye çıkıyor.
+          </p>
+          <div class="hero-cta">
+            <a href="#muzik" class="btn btn-solid">Şimdi Dinle</a>
+            <a href="#video" class="btn btn-ghost">Videoları İzle</a>
+          </div>
+        </div>
+        <div class="scroll-cue">
+          <span>Aşağı Kaydır</span><span class="scroll-line"></span>
+        </div>
+      </section>
+
+      <!-- MARQUEE -->
+      <div class="marquee-wrap">
+        <div class="marquee" id="marquee">
+          <span
+            ><em>ERİYORUM</em> — İlk Albüm 2026 CRUSH Yedi Kalp Tek Nabız
+            <em>ERİYORUM</em> — İlk Albüm 2026 CRUSH Yedi Kalp Tek Nabız</span
+          >
+          <span
+            ><em>ERİYORUM</em> — İlk Albüm 2026 CRUSH Yedi Kalp Tek Nabız
+            <em>ERİYORUM</em> — İlk Albüm 2026 CRUSH Yedi Kalp Tek Nabız</span
+          >
+        </div>
+      </div>
+
+      <!-- STORY -->
+      <section class="story" id="hikaye">
+        <div class="section-accent"></div>
+        <div class="section-grid-bg"></div>
+        <div class="section-pad">
+          <div class="story-grid">
+            <div class="story-visual reveal">
+              <img
+                class="story-photo"
+                src="images/grup-fotografi.jpg"
+                alt="CRUSH grup fotoğrafı"
+                onerror="this.style.display = 'none'"
+              />
+              <span class="tag">CRUSH — 2026</span>
+            </div>
+            <div class="story-body">
+              <span class="eyebrow">Hikayemiz</span>
+              <h2>CRUSH sadece bir <span>boy band</span> değil.</h2>
+              <p class="reveal">
+                Her şey İstanbul'un ara sokaklarında, farklı şehirlerden gelen
+                yedi genç adamın aynı prova salonunda karşılaşmasıyla başladı.
+                <strong>Efe, Arda, Miraç, Oğuzhan, Batu, Barış ve Milan</strong
+                >, önce birer yabancıydı — sonra birer rakip, en sonunda ise
+                birbirinin en büyük destekçisi.
+              </p>
+              <p class="reveal">
+                Kimi caz korosundan geldi, kimi sokak dansından, kimi ise yatak
+                odasında kaydettiği demo şarkılardan. Ortak noktaları tekti:
+                sesin insanı eritebileceğine olan inanç.
+              </p>
+              <p class="reveal">
+                CRUSH, elektronik dokuları r&amp;b'nin sıcaklığıyla harmanlayan
+                kendi "liquid pop" formatını kurdu. Bu yapay bir çıkış değil —
+                yedi farklı sesin, tek bir nabza dönüşme hikayesi.
+              </p>
+              <div class="story-stats reveal">
+                <div class="story-stat">
+                  <span class="story-stat-num">07</span>
+                  <span class="story-stat-label">Üye</span>
+                </div>
+                <div class="story-stat">
+                  <span class="story-stat-num">01</span>
+                  <span class="story-stat-label">Albüm</span>
+                </div>
+                <div class="story-stat">
+                  <span class="story-stat-num">∞</span>
+                  <span class="story-stat-label">Nabız</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MUSIC -->
+      <section class="music" id="muzik">
+        <div class="section-accent"></div>
+        <div class="section-grid-bg"></div>
+        <div class="section-pad">
+          <div class="section-head reveal">
+            <span class="eyebrow">Müzik</span>
+            <h2>CRUSH'ın sesinde <span>eriyin.</span></h2>
+            <p>İlk albüm ERİYORUM'dan öne çıkan parçalar ve single'lar.</p>
+          </div>
+          <div class="music-scroller" id="musicScroller">
+            <div class="track-card" data-num="01">
+              <div
+                class="cover"
+                style="
+                  background: linear-gradient(
+                    145deg,
+                    #e9edf3,
+                    #7d8296 70%
+                  );
+                "
+              >
+                <div class="play-badge">▶</div>
+              </div>
+              <span class="track-num">01 · Albüm</span>
+              <div class="track-title">Eriyorum</div>
+              <div class="track-sub">ERİYORUM</div>
+            </div>
+            <div class="track-card" data-num="02">
+              <div
+                class="cover"
+                style="background: linear-gradient(145deg, #ff9db1, #ff3864 70%)"
+              >
+                <div class="play-badge">▶</div>
+              </div>
+              <span class="track-num">02 · Single</span>
+              <div class="track-title">Nabız</div>
+              <div class="track-sub">2026</div>
+            </div>
+            <div class="track-card" data-num="03">
+              <div
+                class="cover"
+                style="background: linear-gradient(145deg, #c7bcff, #8a6bff 70%)"
+              >
+                <div class="play-badge">▶</div>
+              </div>
+              <span class="track-num">03 · Single</span>
+              <div class="track-title">Elektrik Akımı</div>
+              <div class="track-sub">2026</div>
+            </div>
+            <div class="track-card" data-num="04">
+              <div
+                class="cover"
+                style="background: linear-gradient(145deg, #ffe08a, #e08a2f 70%)"
+              >
+                <div class="play-badge">▶</div>
+              </div>
+              <span class="track-num">04 · Single</span>
+              <div class="track-title">Sokak Lambası</div>
+              <div class="track-sub">2025</div>
+            </div>
+            <div class="track-card" data-num="05">
+              <div
+                class="cover"
+                style="background: linear-gradient(145deg, #9df7d8, #2fc7a1 70%)"
+              >
+                <div class="play-badge">▶</div>
+              </div>
+              <span class="track-num">05 · Single</span>
+              <div class="track-title">Yerçekimi Yok</div>
+              <div class="track-sub">2025</div>
+            </div>
+            <div class="track-card" data-num="06">
+              <div
+                class="cover"
+                style="background: linear-gradient(145deg, #d6d9e0, #3a3f4d 70%)"
+              >
+                <div class="play-badge">▶</div>
+              </div>
+              <span class="track-num">06 · Albüm</span>
+              <div class="track-title">Gece Modu</div>
+              <div class="track-sub">ERİYORUM</div>
+            </div>
+          </div>
+          <div class="scroller-controls">
+            <button
+              aria-label="Geri kaydır"
+              onclick="
+                document
+                  .getElementById('musicScroller')
+                  .scrollBy({ left: -280, behavior: 'smooth' })
+              "
+            >
+              ←
+            </button>
+            <button
+              aria-label="İleri kaydır"
+              onclick="
+                document
+                  .getElementById('musicScroller')
+                  .scrollBy({ left: 280, behavior: 'smooth' })
+              "
+            >
+              →
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- MEMBERS -->
+      <!-- Her üyenin fotoğrafını eklemek için ilgili <img> etiketindeki src="" yolunu güncelle.
+       Örn: images/efe.jpg (dosyaları "images" klasörüne koy) -->
+      <section class="members" id="uyeler">
+        <div class="section-accent"></div>
+        <div class="section-grid-bg"></div>
+        <div class="section-pad">
+          <div class="section-head reveal">
+            <span class="eyebrow">Yedisi Bir Arada</span>
+            <h2>CRUSH üyeleriyle <span>tanış.</span></h2>
+            <p>
+              Yedi farklı ses, yedi farklı enerji — tek bir nabızda buluşuyor.
+            </p>
+          </div>
+          <div class="member-grid">
+            <div class="member-card reveal m1">
+              <div class="member-inner">
+                <div class="avatar">
+                  <img
+                    class="avatar-img"
+                    src="images/efe.jpg"
+                    alt="Efe Şan"
+                    onerror="this.style.display = 'none'"
+                  />
+                  <span>E</span>
+                </div>
+                <div class="member-role">Lider · Ana Vokal</div>
+                <div class="member-name">Efe Şan</div>
+                <div class="member-desc">
+                  Efe sahneye çıktığı an her şeyi sakinleştirir — sesi bir söz,
+                  duruşu bir güven.
+                </div>
+                <div class="member-social">
+                  <a href="#" aria-label="Instagram">IG</a
+                  ><a href="#" aria-label="TikTok">TT</a>
+                </div>
+              </div>
+            </div>
+            <div class="member-card reveal m2">
+              <div class="member-inner">
+                <div class="avatar">
+                  <img
+                    class="avatar-img"
+                    src="images/arda.jpg"
+                    alt="Arda Soydoğan"
+                    onerror="this.style.display = 'none'"
+                  />
+                  <span>A</span>
+                </div>
+                <div class="member-role">Rap · Söz Yazarı</div>
+                <div class="member-name">Arda Soydoğan</div>
+                <div class="member-desc">
+                  Arda'nın kalemi keskin, flow'u akışkan; her satırda sokağın
+                  enerjisini taşır.
+                </div>
+                <div class="member-social">
+                  <a href="#" aria-label="Instagram">IG</a
+                  ><a href="#" aria-label="TikTok">TT</a>
+                </div>
+              </div>
+            </div>
+            <div class="member-card reveal m3">
+              <div class="member-inner">
+                <div class="avatar">
+                  <img
+                    class="avatar-img"
+                    src="images/mirac.jpg"
+                    alt="Miraç Fırat"
+                    onerror="this.style.display = 'none'"
+                  />
+                  <span>M</span>
+                </div>
+                <div class="member-role">Vokal</div>
+                <div class="member-name">Miraç Fırat</div>
+                <div class="member-desc">
+                  Miraç'ın sesi bir yanık gibi — önce ısıtır, sonra kalpte iz
+                  bırakır.
+                </div>
+                <div class="member-social">
+                  <a href="#" aria-label="Instagram">IG</a
+                  ><a href="#" aria-label="TikTok">TT</a>
+                </div>
+              </div>
+            </div>
+            <div class="member-card reveal m4">
+              <div class="member-inner">
+                <div class="avatar">
+                  <img
+                    class="avatar-img"
+                    src="images/oguzhan.jpg"
+                    alt="Oğuzhan Çifçi"
+                    onerror="this.style.display = 'none'"
+                  />
+                  <span>O</span>
+                </div>
+                <div class="member-role">Dans · Vokal</div>
+                <div class="member-name">Oğuzhan Çifçi</div>
+                <div class="member-desc">
+                  Oğuzhan sahnede bir akım gibi hareket eder; her adımı hesaplı,
+                  her bakışı içten.
+                </div>
+                <div class="member-social">
+                  <a href="#" aria-label="Instagram">IG</a
+                  ><a href="#" aria-label="TikTok">TT</a>
+                </div>
+              </div>
+            </div>
+            <div class="member-card reveal m5">
+              <div class="member-inner">
+                <div class="avatar">
+                  <img
+                    class="avatar-img"
+                    src="images/batu.jpg"
+                    alt="Batu Cengiz"
+                    onerror="this.style.display = 'none'"
+                  />
+                  <span>B</span>
+                </div>
+                <div class="member-role">Vizüel · Vokal</div>
+                <div class="member-name">Batu Cengiz</div>
+                <div class="member-desc">
+                  Batu bir bakışta akılda kalır; sahnedeki her karesi CRUSH'ın
+                  imzası gibidir.
+                </div>
+                <div class="member-social">
+                  <a href="#" aria-label="Instagram">IG</a
+                  ><a href="#" aria-label="TikTok">TT</a>
+                </div>
+              </div>
+            </div>
+            <div class="member-card reveal m6">
+              <div class="member-inner">
+                <div class="avatar">
+                  <img
+                    class="avatar-img"
+                    src="images/baris.jpg"
+                    alt="Barış Yüksekkaya"
+                    onerror="this.style.display = 'none'"
+                  />
+                  <span>B</span>
+                </div>
+                <div class="member-role">Rap · Dans</div>
+                <div class="member-name">Barış Yüksekkaya</div>
+                <div class="member-desc">
+                  Barış'ın enerjisi bulaşıcıdır; ritmi ele geçirdiği an sahne
+                  onun olur.
+                </div>
+                <div class="member-social">
+                  <a href="#" aria-label="Instagram">IG</a
+                  ><a href="#" aria-label="TikTok">TT</a>
+                </div>
+              </div>
+            </div>
+            <div class="member-card reveal m7">
+              <div class="member-inner">
+                <div class="avatar">
+                  <img
+                    class="avatar-img"
+                    src="images/milan.jpg"
+                    alt="Milan Önder"
+                    onerror="this.style.display = 'none'"
+                  />
+                  <span>M</span>
+                </div>
+                <div class="member-role">Maknae · Vokal</div>
+                <div class="member-name">Milan Önder</div>
+                <div class="member-desc">
+                  Grubun en genci, en cesuru — Milan'ın enerjisi CRUSH'ı ayakta
+                  tutan nabız.
+                </div>
+                <div class="member-social">
+                  <a href="#" aria-label="Instagram">IG</a
+                  ><a href="#" aria-label="TikTok">TT</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIDEO / WORLD -->
+      <section class="world" id="video">
+        <div class="section-accent"></div>
+        <div class="section-grid-bg"></div>
+        <div class="section-pad">
+          <div class="section-head reveal">
+            <span class="eyebrow">CRUSH Evreni</span>
+            <h2>Sahnenin ötesine <span>göz at.</span></h2>
+            <p>Prova kamerası, sahne arkası anlar ve vlog'lar.</p>
+          </div>
+          <div class="world-grid">
+            <div
+              class="video-tile reveal"
+              style="--vg1: #3a3f4d; --vg2: #0d0e12"
+            >
+              <div class="grad"></div>
+              <div class="play"><div class="play-btn">▶</div></div>
+              <div class="video-label">Prova Kamerası</div>
+            </div>
+            <div
+              class="video-tile reveal"
+              style="--vg1: #5c2033; --vg2: #0d0e12"
+            >
+              <div class="grad"></div>
+              <div class="play"><div class="play-btn">▶</div></div>
+              <div class="video-label">Sahne Arkası</div>
+            </div>
+            <!-- Video eklemek için: aşağıdaki <source src=""> yolunu kendi video dosyanla değiştir.
+             Örn: videos/vlog.mp4 (dosyayı crush.html ile aynı klasördeki "videos" içine koy).
+             İsteğe bağlı kapak görseli için <video poster="..."> alanına bir resim yolu ekleyebilirsin. -->
+            <div
+              class="video-tile reveal"
+              style="--vg1: #332b5c; --vg2: #0d0e12"
+            >
+              <div class="grad"></div>
+              <video
+                class="video-media"
+                playsinline
+                preload="metadata"
+                onerror="this.style.display = 'none'"
+              >
+                <source src="videos/vlog.mp4" type="video/mp4" />
+              </video>
+              <div class="play" onclick="playTileVideo(this)">
+                <div class="play-btn">▶</div>
+              </div>
+              <div class="video-label">Vlog #04</div>
+            </div>
+            <div
+              class="video-tile reveal"
+              style="--vg1: #5c4a20; --vg2: #0d0e12"
+            >
+              <div class="grad"></div>
+              <div class="play"><div class="play-btn">▶</div></div>
+              <div class="video-label">Nabız — Klip</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TOUR -->
+      <section class="tour" id="konser">
+        <div class="section-accent"></div>
+        <div class="section-grid-bg"></div>
+        <div class="section-pad">
+          <div class="section-head reveal">
+            <span class="eyebrow">Konserler</span>
+            <h2>CRUSH <span>şehrine geliyor.</span></h2>
+          </div>
+          <div class="tour-list">
+            <div class="tour-row reveal">
+              <div class="tour-date">14 MAR 2026</div>
+              <div>
+                <div class="tour-city">İstanbul</div>
+                <div class="tour-venue">Volkswagen Arena</div>
+              </div>
+              <a href="#" class="btn btn-solid">Bilet Al</a>
+            </div>
+            <div class="tour-row reveal">
+              <div class="tour-date">21 MAR 2026</div>
+              <div>
+                <div class="tour-city">Ankara</div>
+                <div class="tour-venue">ODTÜ Vişnelik</div>
+              </div>
+              <a href="#" class="btn btn-solid">Bilet Al</a>
+            </div>
+            <div class="tour-row reveal">
+              <div class="tour-date">04 NİS 2026</div>
+              <div>
+                <div class="tour-city">İzmir</div>
+                <div class="tour-venue">Sanat Fabrikası</div>
+              </div>
+              <a href="#" class="btn btn-solid">Bilet Al</a>
+            </div>
+            <div class="tour-row reveal">
+              <div class="tour-date">18 NİS 2026</div>
+              <div>
+                <div class="tour-city">Bursa</div>
+                <div class="tour-venue">Merinos AKKM</div>
+              </div>
+              <a href="#" class="btn btn-solid">Bilet Al</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SOCIAL -->
+      <section class="social" id="sosyal">
+        <div class="section-accent"></div>
+        <div class="social-beams" aria-hidden="true">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="section-pad">
+          <div
+            class="section-head reveal"
+            style="margin-left: auto; margin-right: auto"
+          >
+            <span class="eyebrow">CRUSH'a Katıl</span>
+            <h2>Tüm platformlarda <span>@crushboyband</span></h2>
+          </div>
+          <div class="social-icons reveal">
+            <a href="#" aria-label="Instagram">IG</a>
+            <a href="#" aria-label="TikTok">TT</a>
+            <a href="#" aria-label="YouTube">YT</a>
+            <a href="#" aria-label="Spotify">SP</a>
+            <a href="#" aria-label="X">X</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- NEWS -->
+      <section class="news" id="haberler">
+        <div class="section-accent"></div>
+        <div class="section-grid-bg"></div>
+        <div class="section-pad">
+          <div class="section-head reveal">
+            <span class="eyebrow">Haberler</span>
+            <h2>Kamera flaşları <span>CRUSH'a çevrildi</span></h2>
+            <p>
+              Albüm çıkışlarından sahne haberlerine, en son gelişmeler burada.
+            </p>
+          </div>
+          <div class="news-grid">
+            <div class="news-card reveal">
+              <div class="news-meta"><em>12 Şubat, 2026</em> · Pop Sahne</div>
+              <h3>CRUSH, ilk albümü "ERİYORUM"u tanıttı</h3>
+              <p>
+                Yedi kişilik yeni nesil boy band, uzun zamandır beklenen ilk
+                stüdyo albümüyle sahneye tam anlamıyla adım attı.
+              </p>
+            </div>
+            <div class="news-card reveal">
+              <div class="news-meta">
+                <em>28 Ocak, 2026</em> · Müzik Gündemi
+              </div>
+              <h3>"Nabız" single'ı ilk haftasında zirveye yerleşti</h3>
+              <p>
+                Grubun ikinci single'ı, akışkan prodüksiyonu ve sürükleyici
+                koreografisiyle dinleyiciyle hızla buluştu.
+              </p>
+            </div>
+            <div class="news-card reveal">
+              <div class="news-meta">
+                <em>03 Ocak, 2026</em> · Sahne Dergisi
+              </div>
+              <h3>CRUSH, 2026 turne takvimini duyurdu</h3>
+              <p>
+                İstanbul'dan başlayıp dört şehri kapsayacak turne, grubun sahne
+                performansını ilk kez canlı sunacak.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <a href="#top" class="logo" style="font-size: 18px">CRUSH</a>
+      <div class="foot-links">
+        <a href="#">Gizlilik Politikası</a>
+        <a href="#">Çerez Politikası</a>
+      </div>
+      <p>© 2026 CRUSH. Tüm hakları saklıdır.</p>
+    </footer>
+
+    <script>
+      // header scroll state
+      const header = document.getElementById("site-header");
+      window.addEventListener("scroll", () => {
+        header.classList.toggle("scrolled", window.scrollY > 40);
+      });
+
+      // reveal on scroll
+      const revealEls = document.querySelectorAll(".reveal");
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("in-view");
+              io.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.15 },
+      );
+      revealEls.forEach((el) => io.observe(el));
+
+      const reduceMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+
+      // cursor-reactive prism (lerp toward mouse position within hero)
+      const hero = document.querySelector(".hero");
+      const cursorPrism = document.getElementById("cursorPrism");
+      let targetX = window.innerWidth / 2,
+        targetY = window.innerHeight / 2;
+      let curX = targetX,
+        curY = targetY;
+      let tiltX = 0,
+        tiltY = 0;
+
+      if (hero && cursorPrism && !reduceMotion) {
+        hero.addEventListener("mousemove", (e) => {
+          const rect = hero.getBoundingClientRect();
+          targetX = e.clientX - rect.left;
+          targetY = e.clientY - rect.top;
+          tiltX = (e.clientX - rect.left) / rect.width - 0.5;
+          tiltY = (e.clientY - rect.top) / rect.height - 0.5;
+        });
+        function animatePrism() {
+          curX += (targetX - curX) * 0.07;
+          curY += (targetY - curY) * 0.07;
+          cursorPrism.style.transform = `translate(${curX - 28}px, ${curY - 28}px) rotateX(${-tiltY * 24}deg) rotateY(${tiltX * 24}deg)`;
+          requestAnimationFrame(animatePrism);
+        }
+        const rect = hero.getBoundingClientRect();
+        targetX = rect.width / 2;
+        targetY = rect.height / 2;
+        curX = targetX;
+        curY = targetY;
+        animatePrism();
+      }
+
+      // hero beam pulse sync
+      const beams = document.querySelectorAll(".hero-beams .beam");
+      if (beams.length && !reduceMotion) {
+        let beat = 0;
+        setInterval(() => {
+          beat = (beat + 1) % 7;
+          beams.forEach((b, i) => {
+            b.classList.toggle("beat", i === beat);
+          });
+        }, 420);
+      }
+
+      // play an embedded <video> inside a video-tile when its play button is clicked
+      function playTileVideo(playOverlay) {
+        const tile = playOverlay.closest(".video-tile");
+        const video = tile ? tile.querySelector(".video-media") : null;
+        if (!video || !video.querySelector("source").getAttribute("src"))
+          return;
+        video.setAttribute("controls", "");
+        video.muted = false;
+        video.play().catch(() => {});
+        tile.classList.add("is-playing");
+
+        // video bitince kutuyu eski haline (karartma + oynat ikonu) döndür
+        video.onended = () => {
+          tile.classList.remove("is-playing");
+          video.removeAttribute("controls");
+          video.currentTime = 0;
+          video.muted = true;
+        };
+      }
+
+      // member card subtle tilt
+      document.querySelectorAll(".member-card").forEach((card) => {
+        const inner = card.querySelector(".member-inner");
+        card.addEventListener("mousemove", (e) => {
+          if (reduceMotion) return;
+          const rect = card.getBoundingClientRect();
+          const px = (e.clientX - rect.left) / rect.width - 0.5;
+          const py = (e.clientY - rect.top) / rect.height - 0.5;
+          inner.style.transform = `rotateY(${px * 8}deg) rotateX(${-py * 8}deg)`;
+        });
+        card.addEventListener("mouseleave", () => {
+          inner.style.transform = "rotateY(0deg) rotateX(0deg)";
+        });
+      });
+    </script>
+  </body>
+</html>
