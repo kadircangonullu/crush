@@ -1,3 +1,17 @@
+document.addEventListener("keydown", (e) => {
+  if (e.key === "F12") {
+    e.preventDefault();
+  }
+
+  if (e.ctrlKey && e.shiftKey && e.key === "I") {
+    e.preventDefault();
+  }
+});
+
+document.addEventListener("contextmenu", (e) => {
+  e.preventDefault();
+});
+
 // Image fallbacks are bound from JS so Content Security Policy can stay strict.
 document.querySelectorAll(".member-photo img").forEach((img) => {
   img.addEventListener("error", () => {
