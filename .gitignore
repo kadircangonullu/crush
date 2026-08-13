@@ -1,4 +1,15 @@
+# Editor / OS
 .vscode/
 .DS_Store
 Thumbs.db
+Desktop.ini
+
+# Logs / temp
 *.log
+*.tmp
+*.temp
+
+# Secrets
+.env
+.env.*
+!.env.example

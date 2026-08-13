@@ -1,16 +1,20 @@
-document.addEventListener("keydown", (e) => {
-  if (e.key === "F12") {
-    e.preventDefault();
-  }
-
-  if (e.ctrlKey && e.shiftKey && e.key === "I") {
-    e.preventDefault();
-  }
+// Image fallbacks are bound from JS so Content Security Policy can stay strict.
+document.querySelectorAll(".member-photo img").forEach((img) => {
+  img.addEventListener("error", () => {
+    img.hidden = true;
+    const fallback = img.nextElementSibling;
+    if (fallback) fallback.hidden = false;
+  });
 });
 
-document.addEventListener("contextmenu", (e) => {
-  e.preventDefault();
-});
+const storyPhoto = document.querySelector(".story-photo-card > img");
+if (storyPhoto) {
+  storyPhoto.addEventListener("error", () => {
+    storyPhoto.style.display = "none";
+    const fallback = storyPhoto.nextElementSibling;
+    if (fallback) fallback.style.display = "grid";
+  });
+}
 
 const hero = document.querySelector(".hero");
 const sleeve = document.getElementById("recordSleeve");
