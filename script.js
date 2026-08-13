@@ -39,7 +39,7 @@ const deckButton = document.getElementById("deckButton");
 const deckIcon = document.getElementById("deckIcon");
 const playStatus = document.getElementById("playStatus");
 const nowPlaying = document.getElementById("nowPlaying");
-const youtubeAudio = document.getElementById("youtubeAudio");
+const crushAudio = document.getElementById("crushAudio");
 const BASE_RECORD = 360;
 let playing = false;
 let animating = false;
@@ -53,9 +53,25 @@ function transformForRect(rect, fill = 0.9) {
 }
 
 function setAudio(on) {
-  youtubeAudio.src = on
-    ? "https://www.youtube.com/embed/aKGCXYX7jN8?autoplay=1&playsinline=1&rel=0"
-    : "about:blank";
+  if (!crushAudio) {
+    console.warn("crushAudio elementi bulunamadı.");
+    return;
+  }
+
+  if (on) {
+    crushAudio.muted = false;
+    crushAudio.volume = 1;
+
+    const playPromise = crushAudio.play();
+
+    if (playPromise !== undefined) {
+      playPromise.catch((error) => {
+        console.warn("Ses oynatılamadı:", error);
+      });
+    }
+  } else {
+    crushAudio.pause();
+  }
 }
 
 function playRecord() {
@@ -71,7 +87,8 @@ function playRecord() {
   flight.style.opacity = "1";
   flight.style.transform = transformForRect(sleeveRect, 0.77);
   playStatus.textContent = "PLACING VINYL";
-  deckIcon.textContent = "Ⅱ";
+  deckIcon.classList.remove("is-play");
+  deckIcon.classList.add("is-pause");
   setAudio(true);
 
   requestAnimationFrame(() =>
@@ -106,7 +123,8 @@ function stopRecord() {
   hero.classList.remove("playing");
   hero.classList.add("returning");
   nowPlaying.classList.remove("playing");
-  deckIcon.textContent = "▶";
+  deckIcon.classList.remove("is-pause");
+  deckIcon.classList.add("is-play");
   playStatus.textContent = "RETURNING TO SLEEVE";
 
   const platterRect = platter.getBoundingClientRect();

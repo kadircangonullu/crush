@@ -5353,3 +5353,54 @@ img {
     transition-duration: 0.01ms !important;
   }
 }
+
+.deck-icon {
+  position: relative;
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+}
+
+/* PLAY */
+.deck-icon.is-play::before {
+  content: "";
+  position: absolute;
+
+  top: 50%;
+  left: 52%;
+
+  width: 0;
+  height: 0;
+
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-left: 10px solid currentColor;
+
+  transform: translate(-50%, -50%);
+}
+
+/* PAUSE */
+.deck-icon.is-pause::before,
+.deck-icon.is-pause::after {
+  content: "";
+  position: absolute;
+
+  top: 50%;
+
+  width: 4px;
+  height: 12px;
+
+  border-radius: 1px;
+  background: currentColor;
+
+  transform: translateY(-50%);
+}
+
+.deck-icon.is-pause::before {
+  left: 3px;
+}
+
+.deck-icon.is-pause::after {
+  right: 3px;
+}

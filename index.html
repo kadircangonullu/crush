@@ -190,7 +190,11 @@
               id="deckButton"
               type="button"
             >
-              <span id="deckIcon">▶</span>
+              <span
+                id="deckIcon"
+                class="deck-icon is-play"
+                aria-hidden="true"
+              ></span>
             </button>
             <span class="deck-led"></span>
           </div>
@@ -200,16 +204,9 @@
             <div class="record-label"><span>C</span></div>
           </div>
         </div>
-        <iframe
-          allow="autoplay; encrypted-media"
-          aria-hidden="true"
-          class="youtube-audio"
-          id="youtubeAudio"
-          referrerpolicy="strict-origin-when-cross-origin"
-          src="about:blank"
-          tabindex="-1"
-          title="CRUSH! audio"
-        ></iframe>
+        <audio id="crushAudio" preload="metadata" playsinline>
+          <source src="audio/crush.m4a" type="audio/mpeg" />
+        </audio>
       </section>
       <section aria-label="CRUSH öne çıkan içerikler" class="dashboard">
         <article class="panel">
