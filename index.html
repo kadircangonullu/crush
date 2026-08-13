@@ -4,6 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#fff8fc" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://img.youtube.com; media-src 'self'; frame-src https://www.youtube.com https://www.youtube-nocookie.com; form-action 'self'; upgrade-insecure-requests"
+    />
     <title>CRUSH — Yedi Kalp. Tek Nabız.</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -39,7 +44,7 @@
         <a href="#hikaye">Hikaye</a>
         <a href="#muzik">Müzik</a>
         <a href="#uyeler">Üyeler</a>
-        <a href="#video">Video</a>
+        <a href="#videoFull">Video</a>
         <a href="#takvim">Takvim</a>
         <a href="#konser">Konser</a>
         <a href="#sosyal">Sosyal</a>
@@ -169,6 +174,7 @@
           allow="autoplay; encrypted-media"
           aria-hidden="true"
           tabindex="-1"
+          referrerpolicy="strict-origin-when-cross-origin"
         ></iframe>
       </section>
 
@@ -1560,6 +1566,7 @@ Buraya mektubunu yazabilirsin..."
               web-share;
             "
             allowfullscreen
+            referrerpolicy="strict-origin-when-cross-origin"
           ></iframe>
         </div>
       </div>

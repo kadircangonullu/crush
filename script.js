@@ -1,3 +1,17 @@
+document.addEventListener("keydown", (e) => {
+  if (e.key === "F12") {
+    e.preventDefault();
+  }
+
+  if (e.ctrlKey && e.shiftKey && e.key === "I") {
+    e.preventDefault();
+  }
+});
+
+document.addEventListener("contextmenu", (e) => {
+  e.preventDefault();
+});
+
 const hero = document.querySelector(".hero");
 const sleeve = document.getElementById("recordSleeve");
 const platter = document.getElementById("platter");
