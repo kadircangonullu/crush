@@ -638,6 +638,7 @@ renderArchive(0);
 const letterStudio = document.getElementById("letterStudio");
 const letterEnvelope = document.getElementById("letterEnvelope");
 const letterDesk = document.getElementById("letterDesk");
+const closeLetterStudioBtn = document.getElementById("closeLetterStudio");
 const letterPaper = document.getElementById("letterPaper");
 const letterEditor = document.getElementById("letterEditor");
 const letterCanvas = document.getElementById("letterCanvas");
@@ -689,15 +690,35 @@ let canvasCtx = letterCanvas?.getContext("2d");
 
 function openLetterStudio() {
   if (!letterStudio || letterStudio.classList.contains("is-open")) return;
+
+  letterStudio.classList.remove("is-closing");
   letterStudio.classList.add("is-open");
+
   letterEnvelope?.setAttribute("aria-expanded", "true");
   letterDesk?.setAttribute("aria-hidden", "false");
+
   window.setTimeout(() => {
     resizeLetterCanvas(true);
     letterEditor?.focus();
   }, 1150);
 }
+
+function closeLetterStudio() {
+  if (!letterStudio || !letterStudio.classList.contains("is-open")) return;
+
+  letterStudio.classList.add("is-closing");
+
+  letterEnvelope?.setAttribute("aria-expanded", "false");
+  letterDesk?.setAttribute("aria-hidden", "true");
+
+  window.setTimeout(() => {
+    letterStudio.classList.remove("is-open", "is-closing");
+  }, 650);
+}
+
 letterEnvelope?.addEventListener("click", openLetterStudio);
+
+closeLetterStudioBtn?.addEventListener("click", closeLetterStudio);
 
 function setLetterMode(mode) {
   letterMode = mode;
