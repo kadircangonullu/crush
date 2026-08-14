@@ -1522,13 +1522,77 @@ Buraya mektubunu yazabilirsin..."
                     type="email"
                 /></label>
               </div>
-              <label class="sender-consent"
-                ><input name="consent" required="" type="checkbox" />
-                <span
-                  >Gizlilik bilgilendirmesini okudum; mektubumla birlikte ad,
-                  soyad ve e-posta bilgilerimin işlenmesini kabul
-                  ediyorum.</span
-                ></label
+              <div class="letter-privacy">
+                <button
+                  class="letter-privacy-toggle"
+                  id="letterPrivacyToggle"
+                  type="button"
+                  aria-expanded="false"
+                  aria-controls="letterPrivacyText"
+                >
+                  <span>
+                    <b>GİZLİLİK VE MEKTUP PAYLAŞIMI</b>
+                    <small>Göndermeden önce bilgilendirmeyi okuyun</small>
+                  </span>
+
+                  <span class="privacy-arrow">⌄</span>
+                </button>
+
+                <div class="letter-privacy-text" id="letterPrivacyText" hidden>
+                  <p>
+                    CRUSH Post Office aracılığıyla gönderdiğiniz mektuplar;
+                    mektup içeriğiniz, varsa çiziminiz ve gönderim sırasında
+                    paylaştığınız ad, soyad ve e-posta adresinizle birlikte
+                    veritabanımızda saklanır.
+                  </p>
+
+                  <p>
+                    Gönderilen mektuplar öncelikle CRUSH yetkililerine iletilmek
+                    üzere inceleme ve değerlendirme sürecinde bekletilir. Uygun
+                    görülmesi halinde mektubunuz ve mektupla bağlantılı
+                    bilgileriniz
+                    <strong
+                      >CRUSH yetkilileri ve Doğan Music Company (DMC)</strong
+                    >
+                    ile paylaşılabilir.
+                  </p>
+
+                  <p>
+                    Mektupların alınması, saklanması, incelenmesi, yönetilmesi
+                    ve ilgili kişilere iletilmesi sürecinde, sistemin
+                    işletilmesi için gerekli yetkilere sahip
+                    <strong>site yapımcıları ve yöneticileri</strong>
+                    gönderdiğiniz mektuba ve mektupla birlikte ilettiğiniz
+                    kişisel verilere erişebilir.
+                  </p>
+
+                  <p>
+                    Bu nedenle mektubunuzda veya çiziminizde paylaşılmasını
+                    istemediğiniz özel, hassas veya üçüncü kişilere ait kişisel
+                    bilgilere yer vermemenizi öneririz.
+                  </p>
+                </div>
+              </div>
+
+              <label class="sender-consent">
+                <input
+                  name="consent"
+                  id="letterPrivacyConsent"
+                  required
+                  type="checkbox"
+                />
+
+                <span>
+                  Gizlilik ve Mektup Paylaşım Bilgilendirmesi'ni okudum.
+                  Mektubumun ve kişisel bilgilerimin veritabanında saklanmasını,
+                  yetkili site yöneticileri tarafından erişilebilir olmasını ve
+                  uygun görülmesi halinde
+                  <strong
+                    >CRUSH yetkilileri ile Doğan Music Company (DMC)</strong
+                  >
+                  ile paylaşılmasını kabul ediyorum.
+                </span>
+              </label>
               >
               <div class="sender-submit-row">
                 <button class="sender-back" id="closeSenderForm" type="button">

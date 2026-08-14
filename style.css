@@ -5406,12 +5406,112 @@ img {
 }
 
 /* CRUSH CMS · anti-bot honeypot */
-.sender-honeypot{position:absolute!important;left:-10000px!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important}
-.sender-submit:disabled{opacity:.55;cursor:wait;filter:saturate(.45)}
+.sender-honeypot {
+  position: absolute !important;
+  left: -10000px !important;
+  width: 1px !important;
+  height: 1px !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+.sender-submit:disabled {
+  opacity: 0.55;
+  cursor: wait;
+  filter: saturate(0.45);
+}
 
 /* Phase 3 CMS states */
-.calendar-card[data-event-url]{cursor:pointer}
-.concert-status-on_sale{background:#dffc78!important;color:#101014!important}
-.concert-status-coming_soon{background:#7ae7ff!important;color:#101014!important}
-.concert-status-cancelled{background:#ff7398!important;color:#fff!important}
-.concert-status-completed{background:#6f6f7b!important;color:#fff!important}
+.calendar-card[data-event-url] {
+  cursor: pointer;
+}
+.concert-status-on_sale {
+  background: #dffc78 !important;
+  color: #101014 !important;
+}
+.concert-status-coming_soon {
+  background: #7ae7ff !important;
+  color: #101014 !important;
+}
+.concert-status-cancelled {
+  background: #ff7398 !important;
+  color: #fff !important;
+}
+.concert-status-completed {
+  background: #6f6f7b !important;
+  color: #fff !important;
+}
+
+.letter-privacy {
+  margin-top: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.letter-privacy-toggle {
+  width: 100%;
+  border: 0;
+  padding: 15px 17px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+}
+
+.letter-privacy-toggle b {
+  display: block;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+}
+
+.letter-privacy-toggle small {
+  display: block;
+  margin-top: 4px;
+  opacity: 0.55;
+  font-size: 11px;
+}
+
+.privacy-arrow {
+  flex: 0 0 auto;
+  font-size: 22px;
+  line-height: 1;
+  transition: transform 0.25s ease;
+}
+
+.letter-privacy-toggle.is-open .privacy-arrow {
+  transform: rotate(180deg);
+}
+
+.letter-privacy-text {
+  padding: 0 17px 17px;
+  font-size: 12px;
+  line-height: 1.65;
+  opacity: 0.78;
+}
+
+.letter-privacy-text p {
+  margin: 0 0 12px;
+}
+
+.letter-privacy-text p:last-child {
+  margin-bottom: 0;
+}
+
+.letter-privacy-text strong {
+  color: inherit;
+  font-weight: 700;
+}
+
+.sender-consent {
+  margin-top: 14px;
+}
+
+.sender-consent span {
+  line-height: 1.55;
+}
