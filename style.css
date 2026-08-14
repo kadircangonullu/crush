@@ -5515,3 +5515,111 @@ img {
 .sender-consent span {
   line-height: 1.55;
 }
+
+/* ===== IOS SAFE ICONS ===== */
+
+/* Küçük video play ikonları */
+.play-icon::before,
+.media-thumb i::before,
+.video-card > span i::before {
+  content: "";
+  display: block;
+  width: 0;
+  height: 0;
+
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 8px solid currentColor;
+
+  margin-left: 2px;
+}
+
+/* İçeride yanlışlıkla kalan Unicode karakteri görünmez yap */
+.media-thumb i,
+.video-card > span i {
+  font-size: 0;
+}
+
+/* Video Archive büyük play butonu */
+.archive-play {
+  font-size: 0;
+}
+
+.archive-play::before {
+  content: "";
+  display: block;
+
+  width: 0;
+  height: 0;
+
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-left: 13px solid #fff;
+
+  margin-left: 4px;
+}
+
+.header-youtube {
+  display: grid;
+  place-items: center;
+}
+
+.header-youtube > span {
+  display: block;
+
+  width: 0;
+  height: 0;
+
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 8px solid currentColor;
+
+  margin-left: 2px;
+}
+
+.social-play-icon::before {
+  content: "";
+  display: block;
+  width: 0;
+  height: 0;
+
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-left: 13px solid currentColor;
+
+  margin-left: 3px;
+}
+
+.concert-actions a,
+.fresh-news-copy a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.concert-actions a::after,
+.fresh-news-copy a::after {
+  content: "";
+  width: 9px;
+  height: 9px;
+
+  background:
+    linear-gradient(currentColor, currentColor) right top / 7px 1.5px no-repeat,
+    linear-gradient(currentColor, currentColor) right top / 1.5px 7px no-repeat,
+    linear-gradient(
+      45deg,
+      transparent 44%,
+      currentColor 45%,
+      currentColor 55%,
+      transparent 56%
+    );
+
+  flex-shrink: 0;
+
+  transition: transform 0.2s ease;
+}
+
+.concert-actions a:hover::after,
+.fresh-news-copy a:hover::after {
+  transform: translate(2px, -2px);
+}

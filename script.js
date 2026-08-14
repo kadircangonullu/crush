@@ -186,7 +186,7 @@
         <span>
           <img alt="${cmsEsc(v.title)}" decoding="async" loading="lazy"
                src="${cmsEsc(videoThumb(v, "hqdefault"))}" />
-          <i>▶</i>
+          <i class="play-icon" aria-hidden="true"></i>
         </span>
         <b>${cmsEsc(String(v.title || "").toLocaleUpperCase("tr-TR"))}</b>
         <small>${cmsEsc(v.category || v.badge || "CRUSH VIDEO")}</small>
@@ -206,7 +206,7 @@
           <div class="archive-thumb">
             <img alt="${cmsEsc(v.title)}" decoding="async" loading="lazy"
                  src="${cmsEsc(videoThumb(v, "maxresdefault"))}" />
-            <span class="archive-play">▶</span>
+            <span class="archive-play" aria-hidden="true"></span>
             <small>${cmsEsc(v.badge || v.category || "ARCHIVE")}</small>
           </div>
           <div class="archive-copy">
