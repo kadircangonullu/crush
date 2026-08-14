@@ -2,6 +2,52 @@
 const cmsDb = window.crushSupabase;
 const cmsReady = window.CRUSH_DB_READY;
 
+// ===== PHASE 4.1 · PRIVACY-FRIENDLY VISIT ANALYTICS =====
+(function startCrushAnalytics(){
+  if(!cmsReady || !cmsDb || !window.CRUSH_SUPABASE?.url || !window.CRUSH_SUPABASE?.publishableKey) return;
+  if(location.pathname.includes('/admin/')) return;
+
+  const storageKey='crush_analytics_session';
+  let sessionId='';
+  try{
+    sessionId=sessionStorage.getItem(storageKey)||crypto.randomUUID();
+    sessionStorage.setItem(storageKey,sessionId);
+  }catch(_){ sessionId=crypto.randomUUID(); }
+
+  const startedKey=`${storageKey}_started`;
+  let alreadyStarted=false;
+  try{alreadyStarted=sessionStorage.getItem(startedKey)==='1';}catch(_){}
+
+  const baseBody={
+    sessionId,
+    path:`${location.pathname}${location.search}`.slice(0,500),
+    referrer:document.referrer.slice(0,1000),
+    screenWidth:window.screen?.width||null,
+    screenHeight:window.screen?.height||null,
+    language:navigator.language||'',
+    timezone:Intl.DateTimeFormat().resolvedOptions().timeZone||''
+  };
+
+  if(!alreadyStarted){
+    cmsDb.functions.invoke('track-visit',{body:{event:'start',...baseBody}}).then(({error})=>{
+      if(!error){try{sessionStorage.setItem(startedKey,'1');}catch(_){}}
+    }).catch(()=>{});
+  }
+
+  const sendEnd=()=>{
+    const cfg=window.CRUSH_SUPABASE;
+    try{
+      fetch(`${cfg.url}/functions/v1/track-visit`,{
+        method:'POST',keepalive:true,
+        headers:{'Content-Type':'application/json','apikey':cfg.publishableKey,'Authorization':`Bearer ${cfg.publishableKey}`},
+        body:JSON.stringify({event:'end',sessionId})
+      }).catch(()=>{});
+    }catch(_){}
+  };
+  window.addEventListener('pagehide',sendEnd,{once:true});
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')sendEnd();});
+})();
+
 const cmsEsc = (value = "") =>
   String(value).replace(/[&<>'"]/g, (c) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;"

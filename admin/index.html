@@ -27,6 +27,7 @@
         <div class="admin-brand"><span>CRUSH</span><b>CONTROL ROOM</b></div>
         <nav>
           <button class="nav-btn active" data-view="overview">Dashboard</button>
+          <button class="nav-btn" data-view="analytics">Analytics</button>
           <button class="nav-btn" data-view="letters">Fan Letters <em id="unreadBadge">0</em></button>
           <button class="nav-btn" data-view="members">Members</button>
           <button class="nav-btn" data-view="videos">Videos</button>
@@ -59,6 +60,8 @@
             <article><small>VISIBLE VIDEOS</small><strong id="dashVideos">—</strong></article>
             <article><small>MEDIA ASSETS</small><strong id="dashMedia">—</strong></article>
             <article><small>UPCOMING EVENTS</small><strong id="dashEvents">—</strong></article>
+            <article><small>TODAY VISITS</small><strong id="dashTodayVisits">—</strong></article>
+            <article><small>TOTAL VISITS</small><strong id="dashTotalVisits">—</strong></article>
           </div>
           <div class="panel-card">
             <div class="panel-head"><div><small>INBOX PULSE</small><h2>Son mektuplar</h2></div><button id="openAllLetters">Tümünü aç →</button></div>
@@ -67,6 +70,63 @@
           <div class="panel-card dashboard-activity">
             <div class="panel-head"><div><small>CONTROL ROOM ACTIVITY</small><h2>Son yönetim hareketleri</h2></div><button id="openAuditLogs">Audit Logs →</button></div>
             <div id="recentAudit" class="recent-list"></div>
+          </div>
+        </section>
+
+        <section class="view" id="view-analytics">
+          <div class="analytics-toolbar">
+            <div>
+              <small>SITE TRAFFIC</small>
+              <h2>Ziyaret istatistikleri</h2>
+              <p>Ham IP tutulmaz. Tekil ziyaretçi sayıları anonim hash üzerinden tahmin edilir.</p>
+            </div>
+            <div class="analytics-actions">
+              <label>Grafik aralığı
+                <select id="analyticsRange">
+                  <option value="7">7 gün</option>
+                  <option value="30" selected>30 gün</option>
+                  <option value="90">90 gün</option>
+                </select>
+              </label>
+              <button id="refreshAnalytics">Yenile ↻</button>
+            </div>
+          </div>
+
+          <div class="stat-grid analytics-stat-grid">
+            <article><small>BUGÜN</small><strong id="analyticsToday">—</strong><span>ziyaret</span></article>
+            <article><small>DÜN</small><strong id="analyticsYesterday">—</strong><span>ziyaret</span></article>
+            <article><small>SON 7 GÜN</small><strong id="analytics7">—</strong><span>ziyaret</span></article>
+            <article><small>SON 30 GÜN</small><strong id="analytics30">—</strong><span>ziyaret</span></article>
+            <article><small>TOPLAM</small><strong id="analyticsTotal">—</strong><span>ziyaret</span></article>
+            <article><small>TEKİL TAHMİN</small><strong id="analyticsUnique">—</strong><span>ziyaretçi</span></article>
+            <article><small>BUGÜN TEKİL</small><strong id="analyticsTodayUnique">—</strong><span>ziyaretçi</span></article>
+            <article><small>ORT. OTURUM</small><strong id="analyticsAvgDuration">—</strong><span>süre</span></article>
+          </div>
+
+          <div class="panel-card analytics-chart-card">
+            <div class="panel-head"><div><small>TRAFFIC TREND</small><h2>Günlük ziyaret trendi</h2></div><span id="analyticsChartCaption"></span></div>
+            <div id="analyticsChart" class="analytics-chart"><div class="empty-state">Analitik verisi yükleniyor…</div></div>
+          </div>
+
+          <div class="analytics-split">
+            <div class="panel-card">
+              <div class="panel-head"><div><small>TOP PAGES</small><h2>En çok açılan yollar</h2></div></div>
+              <div id="analyticsPages" class="analytics-breakdown"></div>
+            </div>
+            <div class="panel-card">
+              <div class="panel-head"><div><small>DEVICES</small><h2>Cihaz dağılımı</h2></div></div>
+              <div id="analyticsDevices" class="analytics-breakdown"></div>
+            </div>
+          </div>
+
+          <div class="panel-card">
+            <div class="panel-head"><div><small>DAILY TABLE</small><h2>Günlük tablo</h2></div></div>
+            <div class="analytics-table-wrap">
+              <table class="analytics-table">
+                <thead><tr><th>Tarih</th><th>Ziyaret</th><th>Tekil</th><th>Ort. süre</th></tr></thead>
+                <tbody id="analyticsDailyRows"></tbody>
+              </table>
+            </div>
           </div>
         </section>
 

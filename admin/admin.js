@@ -29,7 +29,7 @@ async function requireAdmin(){
   adminProfile=profile;
   document.getElementById('adminName').textContent=profile.display_name || user.email;
   document.getElementById('adminRole').textContent=profile.role.toUpperCase();
-  showDashboard(); await Promise.all([loadLetters(), loadMembersAdmin(), loadVideosAdmin(), loadMusicAdmin(), loadEventsAdmin(), loadConcertsAdmin(), loadNewsAdmin(), loadAnnouncementsAdmin(), loadMediaAdmin(), loadSiteSettingsAdmin(), loadSocialsAdmin(), loadAuditLogs(), loadDashboardStats()]); return true;
+  showDashboard(); await Promise.all([loadLetters(), loadMembersAdmin(), loadVideosAdmin(), loadMusicAdmin(), loadEventsAdmin(), loadConcertsAdmin(), loadNewsAdmin(), loadAnnouncementsAdmin(), loadMediaAdmin(), loadSiteSettingsAdmin(), loadSocialsAdmin(), loadAuditLogs(), loadDashboardStats(), loadAnalytics()]); return true;
 }
 
 loginForm?.addEventListener('submit',async e=>{
@@ -107,7 +107,7 @@ function setView(name){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById(`view-${name}`)?.classList.add('active');
   document.querySelectorAll('.nav-btn[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===name));
-  const titles={overview:'Dashboard',letters:'Fan Letters',members:'Members',videos:'Videos',music:'Music',calendar:'Calendar',concerts:'Concerts',news:'News',announcements:'Announcements',media:'Media Library',settings:'Site Settings',socials:'Social Links',audit:'Audit Logs'};
+  const titles={overview:'Dashboard',analytics:'Analytics',letters:'Fan Letters',members:'Members',videos:'Videos',music:'Music',calendar:'Calendar',concerts:'Concerts',news:'News',announcements:'Announcements',media:'Media Library',settings:'Site Settings',socials:'Social Links',audit:'Audit Logs'};
   document.getElementById('viewTitle').textContent=titles[name]||name;
 }
 function openLetterView(id){setView('letters');selectLetter(id);}
@@ -597,6 +597,69 @@ function renderAuditLogs(){
 }
 document.getElementById('auditEntityFilter')?.addEventListener('change',renderAuditLogs);
 document.getElementById('refreshAudit')?.addEventListener('click',loadAuditLogs);
+
+
+// ===== PHASE 4.1 · PRIVACY-FRIENDLY ANALYTICS =====
+let analyticsDaily=[];
+const formatCount=n=>new Intl.NumberFormat('tr-TR').format(Number(n||0));
+function formatDuration(seconds){
+  const s=Math.max(0,Math.round(Number(seconds||0)));
+  if(!s)return '—';
+  if(s<60)return `${s} sn`;
+  const m=Math.floor(s/60),r=s%60;
+  return r?`${m} dk ${r} sn`:`${m} dk`;
+}
+function analyticsDateLabel(value){
+  const d=new Date(`${value}T12:00:00`);
+  return new Intl.DateTimeFormat('tr-TR',{day:'2-digit',month:'short'}).format(d);
+}
+function renderAnalyticsChart(rows){
+  const el=document.getElementById('analyticsChart');if(!el)return;
+  if(!rows?.length){el.innerHTML='<div class="empty-state">Henüz ziyaret verisi yok.</div>';return;}
+  const width=920,height=300,padL=48,padR=18,padT=22,padB=44;
+  const max=Math.max(1,...rows.map(x=>Number(x.visits||0)));
+  const innerW=width-padL-padR,innerH=height-padT-padB;
+  const x=i=>padL+(rows.length===1?innerW/2:(i*innerW/(rows.length-1)));
+  const y=v=>padT+innerH-(Number(v||0)/max)*innerH;
+  const points=rows.map((r,i)=>`${x(i).toFixed(1)},${y(r.visits).toFixed(1)}`).join(' ');
+  const area=`${padL},${padT+innerH} ${points} ${x(rows.length-1)},${padT+innerH}`;
+  const ticks=[0,.25,.5,.75,1].map(f=>Math.round(max*f));
+  const yGrid=ticks.map(v=>`<line class="analytics-grid-line" x1="${padL}" y1="${y(v)}" x2="${width-padR}" y2="${y(v)}"/><text class="analytics-axis-label" x="${padL-10}" y="${y(v)+4}" text-anchor="end">${v}</text>`).join('');
+  const step=Math.max(1,Math.ceil(rows.length/7));
+  const xLabels=rows.map((r,i)=>i%step===0||i===rows.length-1?`<text class="analytics-axis-label" x="${x(i)}" y="${height-14}" text-anchor="middle">${analyticsDateLabel(r.day)}</text>`:'').join('');
+  const dots=rows.map((r,i)=>`<circle class="analytics-dot" cx="${x(i)}" cy="${y(r.visits)}" r="4"><title>${analyticsDateLabel(r.day)}: ${r.visits} ziyaret · ${r.unique_visitors} tekil</title></circle>`).join('');
+  el.innerHTML=`<div class="analytics-chart-wrap"><svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Günlük ziyaret grafiği">${yGrid}<polygon class="analytics-area" points="${area}"/><polyline class="analytics-line" points="${points}"/>${dots}${xLabels}</svg><div class="analytics-chart-summary"><span>En yüksek: ${formatCount(max)}</span><span>${formatCount(rows.reduce((a,x)=>a+Number(x.visits||0),0))} toplam ziyaret</span></div></div>`;
+}
+function renderAnalyticsBreakdown(id,rows,labelKey='label'){
+  const el=document.getElementById(id);if(!el)return;
+  const max=Math.max(1,...(rows||[]).map(x=>Number(x.visits||0)));
+  el.innerHTML=(rows||[]).map(x=>`<div class="analytics-breakdown-row"><strong title="${escapeHtml(x[labelKey]||'—')}">${escapeHtml(x[labelKey]||'—')}</strong><div class="analytics-breakdown-bar"><i style="--w:${Math.max(2,(Number(x.visits||0)/max)*100)}%"></i></div><span>${formatCount(x.visits)}</span></div>`).join('')||'<div class="empty-state">Henüz veri yok.</div>';
+}
+function renderAnalyticsTable(rows){
+  const body=document.getElementById('analyticsDailyRows');if(!body)return;
+  body.innerHTML=[...(rows||[])].reverse().map(r=>`<tr><td>${analyticsDateLabel(r.day)}</td><td>${formatCount(r.visits)}</td><td>${formatCount(r.unique_visitors)}</td><td>${formatDuration(r.avg_duration_seconds)}</td></tr>`).join('')||'<tr><td colspan="4">Henüz veri yok.</td></tr>';
+}
+async function loadAnalytics(){
+  if(!db)return;
+  const range=Math.max(7,Math.min(90,Number(document.getElementById('analyticsRange')?.value||30)));
+  const chart=document.getElementById('analyticsChart');if(chart)chart.innerHTML='<div class="empty-state">Analitik verisi yükleniyor…</div>';
+  const [overview,daily,pages,devices]=await Promise.all([
+    db.rpc('crush_analytics_overview'),
+    db.rpc('crush_analytics_daily',{p_days:range}),
+    db.rpc('crush_analytics_top_pages',{p_days:range,p_limit:8}),
+    db.rpc('crush_analytics_devices',{p_days:range})
+  ]);
+  const err=overview.error||daily.error||pages.error||devices.error;
+  if(err){if(chart)chart.innerHTML=`<div class="error-state">${escapeHtml(err.message)}</div>`;return;}
+  const o=Array.isArray(overview.data)?overview.data[0]:overview.data;
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  set('analyticsToday',formatCount(o?.today_visits));set('analyticsYesterday',formatCount(o?.yesterday_visits));set('analytics7',formatCount(o?.last7_visits));set('analytics30',formatCount(o?.last30_visits));set('analyticsTotal',formatCount(o?.total_visits));set('analyticsUnique',formatCount(o?.total_unique_visitors));set('analyticsTodayUnique',formatCount(o?.today_unique_visitors));set('analyticsAvgDuration',formatDuration(o?.avg_duration_seconds));
+  set('dashTodayVisits',formatCount(o?.today_visits));set('dashTotalVisits',formatCount(o?.total_visits));
+  analyticsDaily=daily.data||[];renderAnalyticsChart(analyticsDaily);renderAnalyticsTable(analyticsDaily);renderAnalyticsBreakdown('analyticsPages',pages.data||[],'path');renderAnalyticsBreakdown('analyticsDevices',devices.data||[],'device_type');
+  const caption=document.getElementById('analyticsChartCaption');if(caption)caption.textContent=`Son ${range} gün`;
+}
+document.getElementById('analyticsRange')?.addEventListener('change',loadAnalytics);
+document.getElementById('refreshAnalytics')?.addEventListener('click',loadAnalytics);
 
 
 requireAdmin();
