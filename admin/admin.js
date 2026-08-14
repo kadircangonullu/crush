@@ -29,7 +29,7 @@ async function requireAdmin(){
   adminProfile=profile;
   document.getElementById('adminName').textContent=profile.display_name || user.email;
   document.getElementById('adminRole').textContent=profile.role.toUpperCase();
-  showDashboard(); await Promise.all([loadLetters(), loadMembersAdmin(), loadVideosAdmin(), loadMusicAdmin()]); return true;
+  showDashboard(); await Promise.all([loadLetters(), loadMembersAdmin(), loadVideosAdmin(), loadMusicAdmin(), loadEventsAdmin(), loadConcertsAdmin(), loadNewsAdmin(), loadAnnouncementsAdmin()]); return true;
 }
 
 loginForm?.addEventListener('submit',async e=>{
@@ -107,7 +107,7 @@ function setView(name){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById(`view-${name}`)?.classList.add('active');
   document.querySelectorAll('.nav-btn[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===name));
-  const titles={overview:'Dashboard',letters:'Fan Letters',members:'Members',videos:'Videos',music:'Music'};
+  const titles={overview:'Dashboard',letters:'Fan Letters',members:'Members',videos:'Videos',music:'Music',calendar:'Calendar',concerts:'Concerts',news:'News',announcements:'Announcements'};
   document.getElementById('viewTitle').textContent=titles[name]||name;
 }
 function openLetterView(id){setView('letters');selectLetter(id);}
@@ -332,5 +332,139 @@ document.getElementById('deleteMusicBtn')?.addEventListener('click',async()=>{
   const {error}=await db.from('music_tracks').delete().eq('id',id);if(error)return alert(error.message);
   resetEditor(f,'musicEditorTitle','Parça seç');await loadMusicAdmin();
 });
+
+
+// ===== PHASE 3 · SCHEDULE, LIVE, NEWS & ANNOUNCEMENTS =====
+let eventsAdmin = [];
+let concertsAdmin = [];
+let concertSourcesAdmin = [];
+let newsAdmin = [];
+let announcementsAdmin = [];
+
+function toLocalInput(value){
+  if(!value) return '';
+  const d=new Date(value);
+  const pad=n=>String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+function localInputToIso(value){ return value ? new Date(value).toISOString() : null; }
+function dateOnly(value){ return value ? String(value).slice(0,10) : ''; }
+function timeOnly(value){ return value ? String(value).slice(0,5) : ''; }
+
+// CALENDAR
+async function loadEventsAdmin(){
+  const el=document.getElementById('eventsAdminList'); if(!el||!db)return;
+  emptyManager(el,'Takvim yükleniyor…');
+  const {data,error}=await db.from('events').select('*').order('event_date',{ascending:true}).order('display_order',{ascending:true});
+  if(error){emptyManager(el,error.message);return;}
+  eventsAdmin=data||[]; renderEventsAdmin();
+}
+function renderEventsAdmin(){
+  const el=document.getElementById('eventsAdminList');if(!el)return;
+  el.innerHTML=eventsAdmin.map(x=>`<button class="manager-item" data-event-id="${x.id}"><span class="asset-icon">◷</span><div><strong>${escapeHtml(x.title)}</strong><small>${shortDate(x.event_date)} · ${escapeHtml(x.status)} · ${x.is_visible?'AKTİF':'GİZLİ'}</small></div></button>`).join('')||'<div class="empty-state">Henüz etkinlik yok.</div>';
+  el.querySelectorAll('[data-event-id]').forEach(b=>b.addEventListener('click',()=>editEvent(b.dataset.eventId)));
+}
+function editEvent(id){
+  const x=eventsAdmin.find(v=>v.id===id),f=document.getElementById('eventForm');if(!x||!f)return;
+  ['id','title','series','type','display_order','status','description','url','is_visible'].forEach(k=>setFormValue(f,k,x[k]));
+  setFormValue(f,'event_date',toLocalInput(x.event_date));
+  document.getElementById('eventEditorTitle').textContent=x.title;
+}
+document.getElementById('newEventBtn')?.addEventListener('click',()=>{
+  const f=document.getElementById('eventForm');resetEditor(f,'eventEditorTitle','Yeni etkinlik');
+  setFormValue(f,'display_order',eventsAdmin.length+1);setFormValue(f,'status','published');setFormValue(f,'is_visible',true);
+});
+document.getElementById('eventForm')?.addEventListener('submit',async e=>{
+  e.preventDefault();if(!canEditContent())return alert('Bu hesap içerik düzenleyemez.');
+  const f=e.currentTarget;setEditorStatus('eventSaveStatus','Kaydediliyor…');
+  try{
+    const payload={title:val(f,'title'),series:val(f,'series')||null,description:val(f,'description')||null,event_date:localInputToIso(val(f,'event_date')),type:val(f,'type')||null,url:val(f,'url')||null,display_order:Number(val(f,'display_order')||0),status:val(f,'status')||'published',is_visible:checked(f,'is_visible'),updated_at:new Date().toISOString()};
+    const id=val(f,'id'),query=id?db.from('events').update(payload).eq('id',id):db.from('events').insert(payload);
+    const {error}=await query;if(error)throw error;setEditorStatus('eventSaveStatus','Kaydedildi ✓');await loadEventsAdmin();if(id)editEvent(id);else resetEditor(f,'eventEditorTitle','Etkinlik seç');
+  }catch(err){setEditorStatus('eventSaveStatus',err.message,true);}
+});
+document.getElementById('deleteEventBtn')?.addEventListener('click',async()=>{
+  const f=document.getElementById('eventForm'),id=val(f,'id');if(!id||!canEditContent())return;if(!confirm('Bu etkinliği silmek istediğine emin misin?'))return;
+  const {error}=await db.from('events').delete().eq('id',id);if(error)return alert(error.message);resetEditor(f,'eventEditorTitle','Etkinlik seç');await loadEventsAdmin();
+});
+
+// CONCERTS
+async function loadConcertsAdmin(){
+  const el=document.getElementById('concertsAdminList');if(!el||!db)return;emptyManager(el,'Konserler yükleniyor…');
+  const [{data,error},{data:sources,error:sourceError}]=await Promise.all([
+    db.from('concerts').select('*').order('concert_date',{ascending:true}).order('concert_time',{ascending:true}),
+    db.from('concert_sources').select('*').order('provider',{ascending:true})
+  ]);
+  if(error){emptyManager(el,error.message);return;}
+  concertsAdmin=data||[];concertSourcesAdmin=sourceError?[]:(sources||[]);renderConcertsAdmin();renderConcertSyncStatus();
+}
+function renderConcertsAdmin(){
+  const el=document.getElementById('concertsAdminList');if(!el)return;
+  el.innerHTML=concertsAdmin.map(x=>`<button class="manager-item" data-concert-id="${x.id}"><span class="asset-icon">♬</span><div><strong>${escapeHtml(x.venue)}</strong><small>${escapeHtml(x.concert_date)} · ${escapeHtml(x.status)} · ${x.source==='bubilet'&&x.auto_sync?'BUBİLET AUTO':'MANUEL'}${x.manual_override?' · OVERRIDE':''} · ${x.is_visible?'AKTİF':'GİZLİ'}</small></div></button>`).join('')||'<div class="empty-state">Henüz konser yok.</div>';
+  el.querySelectorAll('[data-concert-id]').forEach(b=>b.addEventListener('click',()=>editConcert(b.dataset.concertId)));
+}
+function renderConcertSyncStatus(){
+  const el=document.getElementById('bubiletSyncStatus');if(!el)return;
+  const src=concertSourcesAdmin.find(x=>x.provider==='bubilet');
+  if(!src){el.className='sync-strip error';el.textContent='Bubilet kaynağı bulunamadı. 004 migration çalıştırılmalı.';return;}
+  const when=src.last_sync_at?fmtDate(src.last_sync_at):'Henüz senkron yapılmadı';
+  el.className=`sync-strip ${src.last_sync_status==='success'?'ok':src.last_sync_status==='error'?'error':''}`;
+  el.textContent=`Bubilet AUTO · ${when}${src.last_sync_message?' · '+src.last_sync_message:''}`;
+}
+function editConcert(id){
+  const x=concertsAdmin.find(v=>v.id===id),f=document.getElementById('concertForm');if(!x||!f)return;
+  ['id','venue','city','status','status_text','description','ticket_url','is_visible','auto_sync','manual_override'].forEach(k=>setFormValue(f,k,x[k]));
+  setFormValue(f,'concert_date',dateOnly(x.concert_date));setFormValue(f,'concert_time',timeOnly(x.concert_time));document.getElementById('concertEditorTitle').textContent=x.venue;
+  document.getElementById('concertAutoSource').textContent=x.source==='bubilet'?'Bubilet · Otomatik keşif':'Manuel kayıt';
+  document.getElementById('concertLastSync').textContent=x.last_synced_at?`Son sync: ${fmtDate(x.last_synced_at)} · Algılanan: ${x.detected_status||'—'}`:'Henüz senkronlanmadı';
+}
+document.getElementById('newConcertBtn')?.addEventListener('click',()=>{const f=document.getElementById('concertForm');resetEditor(f,'concertEditorTitle','Yeni konser');setFormValue(f,'status','coming_soon');setFormValue(f,'is_visible',true);setFormValue(f,'auto_sync',false);setFormValue(f,'manual_override',true);document.getElementById('concertAutoSource').textContent='Manuel kayıt';document.getElementById('concertLastSync').textContent='—';});
+document.getElementById('concertForm')?.addEventListener('submit',async e=>{
+  e.preventDefault();if(!canEditContent())return alert('Bu hesap içerik düzenleyemez.');const f=e.currentTarget;setEditorStatus('concertSaveStatus','Kaydediliyor…');
+  try{const payload={venue:val(f,'venue'),city:val(f,'city')||null,concert_date:val(f,'concert_date'),concert_time:val(f,'concert_time')||null,ticket_url:val(f,'ticket_url')||null,status:val(f,'status')||'coming_soon',status_text:val(f,'status_text')||null,description:val(f,'description')||null,is_visible:checked(f,'is_visible'),auto_sync:checked(f,'auto_sync'),manual_override:checked(f,'manual_override'),updated_at:new Date().toISOString()};
+    const id=val(f,'id'),query=id?db.from('concerts').update(payload).eq('id',id):db.from('concerts').insert(payload);const {error}=await query;if(error)throw error;setEditorStatus('concertSaveStatus','Kaydedildi ✓');await loadConcertsAdmin();if(id)editConcert(id);else resetEditor(f,'concertEditorTitle','Konser seç');
+  }catch(err){setEditorStatus('concertSaveStatus',err.message,true);}
+});
+document.getElementById('deleteConcertBtn')?.addEventListener('click',async()=>{const f=document.getElementById('concertForm'),id=val(f,'id');if(!id||!canEditContent())return;if(!confirm('Bu konseri silmek istediğine emin misin?'))return;const {error}=await db.from('concerts').delete().eq('id',id);if(error)return alert(error.message);resetEditor(f,'concertEditorTitle','Konser seç');await loadConcertsAdmin();});
+
+
+document.getElementById('syncBubiletBtn')?.addEventListener('click',async()=>{
+  if(!canEditContent())return alert('Bu hesap senkron başlatamaz.');
+  const btn=document.getElementById('syncBubiletBtn'),status=document.getElementById('bubiletSyncStatus');
+  btn.disabled=true;if(status){status.className='sync-strip busy';status.textContent='Bubilet kontrol ediliyor…';}
+  try{
+    const {data,error}=await db.functions.invoke('sync-bubilet',{body:{trigger:'admin'}});if(error)throw error;
+    if(!data?.ok) throw new Error(data?.sources?.map(x=>x.error).filter(Boolean).join(' · ')||'Senkron tamamlanamadı.');
+    await loadConcertsAdmin();
+  }catch(err){if(status){status.className='sync-strip error';status.textContent=`Bubilet sync hatası · ${err.message}`;}}
+  finally{btn.disabled=false;}
+});
+
+// NEWS
+async function loadNewsAdmin(){
+  const el=document.getElementById('newsAdminList');if(!el||!db)return;emptyManager(el,'Haberler yükleniyor…');
+  const {data,error}=await db.from('news').select('*').order('is_featured',{ascending:false}).order('published_at',{ascending:false});if(error){emptyManager(el,error.message);return;}newsAdmin=data||[];renderNewsAdmin();
+}
+function renderNewsAdmin(){
+  const el=document.getElementById('newsAdminList');if(!el)return;
+  el.innerHTML=newsAdmin.map(x=>`<button class="manager-item" data-news-id="${x.id}"><span class="asset-icon">N</span><div><strong>${escapeHtml(x.title)}</strong><small>${x.is_featured?'ÖNE ÇIKAN · ':''}${shortDate(x.published_at)} · ${x.is_visible?'AKTİF':'GİZLİ'}</small></div></button>`).join('')||'<div class="empty-state">Henüz haber yok.</div>';
+  el.querySelectorAll('[data-news-id]').forEach(b=>b.addEventListener('click',()=>editNews(b.dataset.newsId)));
+}
+function editNews(id){const x=newsAdmin.find(v=>v.id===id),f=document.getElementById('newsForm');if(!x||!f)return;['id','title','category','external_url','summary','is_featured','is_visible'].forEach(k=>setFormValue(f,k,x[k]));setFormValue(f,'published_at',toLocalInput(x.published_at));document.getElementById('newsEditorTitle').textContent=x.title;}
+document.getElementById('newNewsBtn')?.addEventListener('click',()=>{const f=document.getElementById('newsForm');resetEditor(f,'newsEditorTitle','Yeni haber');setFormValue(f,'published_at',toLocalInput(new Date().toISOString()));setFormValue(f,'is_visible',true);});
+document.getElementById('newsForm')?.addEventListener('submit',async e=>{e.preventDefault();if(!canEditContent())return alert('Bu hesap içerik düzenleyemez.');const f=e.currentTarget;setEditorStatus('newsSaveStatus','Kaydediliyor…');try{const payload={title:val(f,'title'),summary:val(f,'summary')||null,category:val(f,'category')||null,published_at:localInputToIso(val(f,'published_at')),external_url:val(f,'external_url')||null,is_featured:checked(f,'is_featured'),is_visible:checked(f,'is_visible'),updated_at:new Date().toISOString()};const id=val(f,'id'),query=id?db.from('news').update(payload).eq('id',id):db.from('news').insert(payload);const {error}=await query;if(error)throw error;setEditorStatus('newsSaveStatus','Kaydedildi ✓');await loadNewsAdmin();if(id)editNews(id);else resetEditor(f,'newsEditorTitle','Haber seç');}catch(err){setEditorStatus('newsSaveStatus',err.message,true);}});
+document.getElementById('deleteNewsBtn')?.addEventListener('click',async()=>{const f=document.getElementById('newsForm'),id=val(f,'id');if(!id||!canEditContent())return;if(!confirm('Bu haberi silmek istediğine emin misin?'))return;const {error}=await db.from('news').delete().eq('id',id);if(error)return alert(error.message);resetEditor(f,'newsEditorTitle','Haber seç');await loadNewsAdmin();});
+
+// ANNOUNCEMENTS
+async function loadAnnouncementsAdmin(){
+  const el=document.getElementById('announcementsAdminList');if(!el||!db)return;emptyManager(el,'Duyurular yükleniyor…');
+  const {data,error}=await db.from('announcements').select('*').order('created_at',{ascending:false});if(error){emptyManager(el,error.message);return;}announcementsAdmin=data||[];renderAnnouncementsAdmin();
+}
+function renderAnnouncementsAdmin(){const el=document.getElementById('announcementsAdminList');if(!el)return;el.innerHTML=announcementsAdmin.map(x=>`<button class="manager-item" data-announcement-id="${x.id}"><span class="asset-icon">📣</span><div><strong>${escapeHtml(x.message)}</strong><small>${x.is_active?'AKTİF':'PASİF'} · ${x.ends_at?'BİTİŞ '+shortDate(x.ends_at):'SÜRESİZ'}</small></div></button>`).join('')||'<div class="empty-state">Henüz duyuru yok.</div>';el.querySelectorAll('[data-announcement-id]').forEach(b=>b.addEventListener('click',()=>editAnnouncement(b.dataset.announcementId)));}
+function editAnnouncement(id){const x=announcementsAdmin.find(v=>v.id===id),f=document.getElementById('announcementForm');if(!x||!f)return;['id','message','url','is_active'].forEach(k=>setFormValue(f,k,x[k]));setFormValue(f,'starts_at',toLocalInput(x.starts_at));setFormValue(f,'ends_at',toLocalInput(x.ends_at));document.getElementById('announcementEditorTitle').textContent='Duyuru';}
+document.getElementById('newAnnouncementBtn')?.addEventListener('click',()=>{const f=document.getElementById('announcementForm');resetEditor(f,'announcementEditorTitle','Yeni duyuru');setFormValue(f,'is_active',true);});
+document.getElementById('announcementForm')?.addEventListener('submit',async e=>{e.preventDefault();if(!canEditContent())return alert('Bu hesap içerik düzenleyemez.');const f=e.currentTarget;setEditorStatus('announcementSaveStatus','Kaydediliyor…');try{const payload={message:val(f,'message'),url:val(f,'url')||null,starts_at:localInputToIso(val(f,'starts_at')),ends_at:localInputToIso(val(f,'ends_at')),is_active:checked(f,'is_active'),updated_at:new Date().toISOString()};const id=val(f,'id'),query=id?db.from('announcements').update(payload).eq('id',id):db.from('announcements').insert(payload);const {error}=await query;if(error)throw error;setEditorStatus('announcementSaveStatus','Kaydedildi ✓');await loadAnnouncementsAdmin();if(id)editAnnouncement(id);else resetEditor(f,'announcementEditorTitle','Duyuru seç');}catch(err){setEditorStatus('announcementSaveStatus',err.message,true);}});
+document.getElementById('deleteAnnouncementBtn')?.addEventListener('click',async()=>{const f=document.getElementById('announcementForm'),id=val(f,'id');if(!id||!canEditContent())return;if(!confirm('Bu duyuruyu silmek istediğine emin misin?'))return;const {error}=await db.from('announcements').delete().eq('id',id);if(error)return alert(error.message);resetEditor(f,'announcementEditorTitle','Duyuru seç');await loadAnnouncementsAdmin();});
+
 
 requireAdmin();

@@ -114,6 +114,95 @@ function renderCmsVideos(videos) {
   }
 }
 
+
+function cmsDateParts(value) {
+  const raw = String(value || "");
+  const iso = raw.slice(0, 10);
+  const [y, m, d] = iso.split("-").map(Number);
+  if (!y || !m || !d) return null;
+  const date = new Date(y, m - 1, d, 12, 0, 0);
+  return {
+    iso,
+    date,
+    day: String(d).padStart(2, "0"),
+    monthShort: new Intl.DateTimeFormat("tr-TR", { month: "short" }).format(date).replace(".", "").toLocaleUpperCase("tr-TR"),
+    monthLong: new Intl.DateTimeFormat("tr-TR", { month: "long" }).format(date).toLocaleUpperCase("tr-TR"),
+    weekday: new Intl.DateTimeFormat("tr-TR", { weekday: "long" }).format(date).toLocaleUpperCase("tr-TR"),
+  };
+}
+
+function renderCmsEvents(events) {
+  const track = document.getElementById("calendarTrack");
+  if (!track) return;
+  track.innerHTML = (events || []).map((event, i) => {
+    const p = cmsDateParts(event.event_date);
+    if (!p) return "";
+    return `<article class="calendar-card" data-date="${cmsEsc(p.iso)}"${event.url ? ` data-event-url="${cmsEsc(event.url)}" tabindex="0" role="link"` : ""}>
+      <div class="calendar-card-top"><span class="calendar-state">—</span><b>${String(i + 1).padStart(2, "0")} / ${String(events.length).padStart(2, "0")}</b></div>
+      <div class="calendar-date"><strong>${p.day}</strong><div><span>${p.monthShort}</span><b>${p.weekday}</b></div></div>
+      <div class="calendar-copy"><small>${cmsEsc(event.series || event.type || "CRUSH")}</small><h3>${cmsEsc(event.title)}</h3><p>${cmsEsc(event.description || "")}</p></div>
+      <div class="calendar-progress"><i></i></div>
+    </article>`;
+  }).join("");
+  track.querySelectorAll("[data-event-url]").forEach((card) => {
+    const open = () => window.open(card.dataset.eventUrl, "_blank", "noopener,noreferrer");
+    card.addEventListener("click", open);
+    card.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } });
+  });
+  const kicker = document.querySelector(".calendar-kicker");
+  if (kicker && events?.length) {
+    const first = cmsDateParts(events[0].event_date), last = cmsDateParts(events[events.length - 1].event_date);
+    kicker.textContent = first && last && first.monthLong === last.monthLong ? `${first.monthLong} ${first.date.getFullYear()} · İÇERİK TAKVİMİ` : "CRUSH · İÇERİK TAKVİMİ";
+  }
+  updateCalendar();
+}
+
+const concertStatusText = {
+  coming_soon: "YAKINDA",
+  on_sale: "SATIŞTA",
+  sold_out: "TÜKENDİ",
+  cancelled: "İPTAL",
+  completed: "TAMAMLANDI",
+};
+function renderCmsConcerts(concerts) {
+  const list = document.querySelector("#konser .concert-list");
+  if (!list) return;
+  list.innerHTML = (concerts || []).map((concert, i) => {
+    const p = cmsDateParts(concert.concert_date); if (!p) return "";
+    const time = String(concert.concert_time || "").slice(0, 5);
+    const status = concert.status_text || concertStatusText[concert.status] || String(concert.status || "").toLocaleUpperCase("tr-TR");
+    return `<article class="concert-card ${i % 2 ? "concert-card-alt" : ""}">
+      <div class="concert-date"><strong>${p.day}</strong><span>${p.monthLong}<br><b>${p.weekday}</b></span></div>
+      <div class="concert-info"><small>${i + 1}. GECE${time ? ` · ${cmsEsc(time)}` : ""}</small><h3>${cmsEsc(concert.venue)}</h3><p>${cmsEsc([concert.city, concert.description].filter(Boolean).join(" · "))}</p></div>
+      <div class="concert-actions"><span class="sold-chip concert-status-${cmsEsc(concert.status)}">${cmsEsc(status)}</span>${concert.ticket_url ? `<a href="${cmsEsc(concert.ticket_url)}" rel="noopener noreferrer" target="_blank">Bilet / Detay ↗</a>` : ""}</div>
+    </article>`;
+  }).join("");
+  const note = document.querySelector("#konser .concert-note");
+  if (note) note.style.display = "none";
+}
+
+function renderCmsNews(news) {
+  const grid = document.querySelector("#haberler .news-cards");
+  if (!grid) return;
+  grid.innerHTML = (news || []).map((item) => {
+    const p = cmsDateParts(item.published_at); if (!p) return "";
+    return `<article class="fresh-news ${item.is_featured ? "featured-news" : ""}">
+      <div class="news-date-box"><strong>${p.day}</strong><span>${p.monthShort}</span></div>
+      <div class="fresh-news-copy"><small>${cmsEsc(item.category || "CRUSH · HABER")}</small><h3>${cmsEsc(item.title)}</h3><p>${cmsEsc(item.summary || "")}</p>${item.external_url ? `<a href="${cmsEsc(item.external_url)}" rel="noopener noreferrer" target="_blank">Detayları gör ↗</a>` : ""}</div>
+    </article>`;
+  }).join("");
+}
+
+function renderCmsAnnouncement(items) {
+  const box = document.querySelector("aside.announcement");
+  if (!box) return;
+  const item = items?.[0];
+  if (!item) { box.style.display = "none"; return; }
+  box.style.removeProperty("display");
+  const link = item.url ? (String(item.url).startsWith("#") ? `<a href="${cmsEsc(item.url)}">Detayları gör →</a>` : `<a href="${cmsEsc(item.url)}" rel="noopener noreferrer" target="_blank">Detayları gör →</a>`) : "";
+  box.innerHTML = `<strong>📣 &nbsp; CRUSH DUYURU</strong><span>${cmsEsc(item.message)}</span>${link}`;
+}
+
 function renderFeaturedTrack(track) {
   if (!track) return;
   const cover = cmsUrl(track.cover_url, "images/crush-cover.webp");
@@ -139,18 +228,24 @@ function renderFeaturedTrack(track) {
 async function hydrateCrushCms() {
   if (!cmsReady || !cmsDb) return;
   try {
-    const [membersRes, videosRes, musicRes] = await Promise.all([
+    const [membersRes, videosRes, musicRes, eventsRes, concertsRes, newsRes, announcementsRes] = await Promise.all([
       cmsDb.from("members").select("*").eq("is_active", true).order("display_order", { ascending: true }),
       cmsDb.from("videos").select("*").eq("is_visible", true).order("display_order", { ascending: true }),
       cmsDb.from("music_tracks").select("*").eq("is_active", true).order("is_featured", { ascending: false }).order("display_order", { ascending: true }),
+      cmsDb.from("events").select("*").eq("is_visible", true).eq("status", "published").order("event_date", { ascending: true }).order("display_order", { ascending: true }),
+      cmsDb.from("concerts").select("*").eq("is_visible", true).order("concert_date", { ascending: true }).order("concert_time", { ascending: true }),
+      cmsDb.from("news").select("*").eq("is_visible", true).order("is_featured", { ascending: false }).order("published_at", { ascending: false }),
+      cmsDb.from("announcements").select("*").eq("is_active", true).order("created_at", { ascending: false }).limit(1),
     ]);
-    if (membersRes.error) throw membersRes.error;
-    if (videosRes.error) throw videosRes.error;
-    if (musicRes.error) throw musicRes.error;
+    [membersRes, videosRes, musicRes, eventsRes, concertsRes, newsRes, announcementsRes].forEach((r) => { if (r.error) throw r.error; });
 
     if (membersRes.data?.length) renderCmsMembers(membersRes.data);
     if (videosRes.data?.length) renderCmsVideos(videosRes.data);
     if (musicRes.data?.length) renderFeaturedTrack(musicRes.data[0]);
+    renderCmsEvents(eventsRes.data || []);
+    renderCmsConcerts(concertsRes.data || []);
+    renderCmsNews(newsRes.data || []);
+    renderCmsAnnouncement(announcementsRes.data || []);
     document.documentElement.dataset.cms = "ready";
   } catch (error) {
     console.warn("CRUSH CMS içeriği yüklenemedi; statik fallback kullanılıyor:", error);
@@ -409,9 +504,6 @@ navLinks.forEach((link) =>
 updateActiveNav();
 
 // ===== DYNAMIC CONTENT CALENDAR =====
-const calendarCards = [
-  ...document.querySelectorAll(".calendar-card[data-date]"),
-];
 const focusDay = document.getElementById("focusDay");
 const focusMonth = document.getElementById("focusMonth");
 const focusStatus = document.getElementById("focusStatus");
@@ -447,6 +539,7 @@ function calendarLabel(diff) {
   return diff <= 5 ? `${diff} GÜN SONRA` : "YAKINDA";
 }
 function updateCalendar() {
+  const calendarCards = [...document.querySelectorAll(".calendar-card[data-date]")];
   const today = localDay(new Date());
   let focus = null;
   let firstFuture = null;

@@ -31,9 +31,10 @@
           <button class="nav-btn" data-view="members">Members</button>
           <button class="nav-btn" data-view="videos">Videos</button>
           <button class="nav-btn" data-view="music">Music</button>
-          <button class="nav-btn" disabled>Calendar <small>yakında</small></button>
-          <button class="nav-btn" disabled>Concerts <small>yakında</small></button>
-          <button class="nav-btn" disabled>News <small>yakında</small></button>
+          <button class="nav-btn" data-view="calendar">Calendar</button>
+          <button class="nav-btn" data-view="concerts">Concerts</button>
+          <button class="nav-btn" data-view="news">News</button>
+          <button class="nav-btn" data-view="announcements">Announcements</button>
           <button class="nav-btn" disabled>Media Library <small>yakında</small></button>
           <button class="nav-btn" disabled>Site Settings <small>yakında</small></button>
         </nav>
@@ -162,6 +163,102 @@
                 <label class="check-field"><input name="is_active" type="checkbox" checked /> Aktif</label>
               </div>
               <div class="editor-actions"><button type="submit" class="primary">Değişiklikleri kaydet</button><button type="button" class="danger" id="deleteMusicBtn">Sil</button></div>
+            </form>
+          </div>
+        </section>
+
+        <section class="view" id="view-calendar">
+          <div class="manager-layout">
+            <div class="manager-list-panel">
+              <div class="manager-head"><div><small>CONTENT CALENDAR</small><h2>Takvim</h2></div><button class="add-btn" id="newEventBtn">+ Yeni</button></div>
+              <div id="eventsAdminList" class="manager-list"></div>
+            </div>
+            <form id="eventForm" class="editor-card">
+              <input type="hidden" name="id" />
+              <div class="editor-head"><div><small>EVENT EDITOR</small><h2 id="eventEditorTitle">Etkinlik seç</h2></div><span id="eventSaveStatus"></span></div>
+              <div class="form-grid">
+                <label>Başlık<input name="title" required /></label>
+                <label>Seri / üst başlık<input name="series" placeholder="CRUSH!" /></label>
+                <label>Tarih ve saat<input name="event_date" type="datetime-local" required /></label>
+                <label>Tür<input name="type" placeholder="video, challenge, episode..." /></label>
+                <label>Sıra<input name="display_order" type="number" min="0" value="0" /></label>
+                <label>Durum<select name="status"><option value="draft">Taslak</option><option value="published">Yayında</option><option value="cancelled">İptal</option></select></label>
+              </div>
+              <label>Açıklama<textarea name="description" rows="4"></textarea></label>
+              <label>Bağlantı URL<input name="url" type="url" /></label>
+              <label class="check-field"><input name="is_visible" type="checkbox" checked /> Sitede göster</label>
+              <div class="editor-actions"><button type="submit" class="primary">Değişiklikleri kaydet</button><button type="button" class="danger" id="deleteEventBtn">Sil</button></div>
+            </form>
+          </div>
+        </section>
+
+        <section class="view" id="view-concerts">
+          <div class="manager-layout">
+            <div class="manager-list-panel">
+              <div class="manager-head"><div><small>LIVE DATES</small><h2>Konserler</h2></div><div class="head-actions"><button class="add-btn secondary" id="syncBubiletBtn">↻ Bubilet Sync</button><button class="add-btn" id="newConcertBtn">+ Yeni</button></div></div>
+              <div id="bubiletSyncStatus" class="sync-strip">Bubilet otomatik senkron durumu yükleniyor…</div>
+              <div id="concertsAdminList" class="manager-list"></div>
+            </div>
+            <form id="concertForm" class="editor-card">
+              <input type="hidden" name="id" />
+              <div class="editor-head"><div><small>CONCERT EDITOR</small><h2 id="concertEditorTitle">Konser seç</h2></div><span id="concertSaveStatus"></span></div>
+              <div class="form-grid">
+                <label>Mekân<input name="venue" required /></label>
+                <label>Şehir<input name="city" /></label>
+                <label>Tarih<input name="concert_date" type="date" required /></label>
+                <label>Saat<input name="concert_time" type="time" /></label>
+                <label>Durum<select name="status"><option value="coming_soon">Yakında</option><option value="on_sale">Satışta</option><option value="sold_out">Tükendi</option><option value="cancelled">İptal</option><option value="completed">Tamamlandı</option></select></label>
+                <label>Durum yazısı<input name="status_text" placeholder="TÜKENDİ" /></label>
+              </div>
+              <div class="auto-source-box">
+                <div><small>OTOMATİK KAYNAK</small><strong id="concertAutoSource">Manuel kayıt</strong><span id="concertLastSync">—</span></div>
+                <div class="check-row"><label class="check-field"><input name="auto_sync" type="checkbox" /> Bubilet ile otomatik senkron</label><label class="check-field"><input name="manual_override" type="checkbox" /> Durumu manuel override et</label></div>
+                <p>Override kapalıysa Bubilet'te algılanan durum otomatik uygulanır. Override açıkken admin panelindeki durum korunur.</p>
+              </div>
+              <label>Açıklama<textarea name="description" rows="4"></textarea></label>
+              <label>Bilet URL<input name="ticket_url" type="url" /></label>
+              <label class="check-field"><input name="is_visible" type="checkbox" checked /> Sitede göster</label>
+              <div class="editor-actions"><button type="submit" class="primary">Değişiklikleri kaydet</button><button type="button" class="danger" id="deleteConcertBtn">Sil</button></div>
+            </form>
+          </div>
+        </section>
+
+        <section class="view" id="view-news">
+          <div class="manager-layout">
+            <div class="manager-list-panel">
+              <div class="manager-head"><div><small>CRUSH NEWSROOM</small><h2>Haberler</h2></div><button class="add-btn" id="newNewsBtn">+ Yeni</button></div>
+              <div id="newsAdminList" class="manager-list"></div>
+            </div>
+            <form id="newsForm" class="editor-card">
+              <input type="hidden" name="id" />
+              <div class="editor-head"><div><small>NEWS EDITOR</small><h2 id="newsEditorTitle">Haber seç</h2></div><span id="newsSaveStatus"></span></div>
+              <div class="form-grid">
+                <label>Başlık<input name="title" required /></label>
+                <label>Kategori<input name="category" placeholder="KONSER · GÜNCEL" /></label>
+                <label>Yayın tarihi<input name="published_at" type="datetime-local" required /></label>
+                <label>Dış bağlantı<input name="external_url" type="url" /></label>
+              </div>
+              <label>Özet<textarea name="summary" rows="6"></textarea></label>
+              <div class="check-row"><label class="check-field"><input name="is_featured" type="checkbox" /> Öne çıkar</label><label class="check-field"><input name="is_visible" type="checkbox" checked /> Sitede göster</label></div>
+              <div class="editor-actions"><button type="submit" class="primary">Değişiklikleri kaydet</button><button type="button" class="danger" id="deleteNewsBtn">Sil</button></div>
+            </form>
+          </div>
+        </section>
+
+        <section class="view" id="view-announcements">
+          <div class="manager-layout">
+            <div class="manager-list-panel">
+              <div class="manager-head"><div><small>ANNOUNCEMENT BAR</small><h2>Duyurular</h2></div><button class="add-btn" id="newAnnouncementBtn">+ Yeni</button></div>
+              <div id="announcementsAdminList" class="manager-list"></div>
+            </div>
+            <form id="announcementForm" class="editor-card">
+              <input type="hidden" name="id" />
+              <div class="editor-head"><div><small>ANNOUNCEMENT EDITOR</small><h2 id="announcementEditorTitle">Duyuru seç</h2></div><span id="announcementSaveStatus"></span></div>
+              <label>Mesaj<textarea name="message" rows="5" required></textarea></label>
+              <label>Bağlantı <small>#sosyal gibi site içi bağlantı da kullanılabilir</small><input name="url" /></label>
+              <div class="form-grid"><label>Başlangıç<input name="starts_at" type="datetime-local" /></label><label>Bitiş<input name="ends_at" type="datetime-local" /></label></div>
+              <label class="check-field"><input name="is_active" type="checkbox" checked /> Aktif</label>
+              <div class="editor-actions"><button type="submit" class="primary">Değişiklikleri kaydet</button><button type="button" class="danger" id="deleteAnnouncementBtn">Sil</button></div>
             </form>
           </div>
         </section>

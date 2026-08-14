@@ -5408,3 +5408,10 @@ img {
 /* CRUSH CMS · anti-bot honeypot */
 .sender-honeypot{position:absolute!important;left:-10000px!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important}
 .sender-submit:disabled{opacity:.55;cursor:wait;filter:saturate(.45)}
+
+/* Phase 3 CMS states */
+.calendar-card[data-event-url]{cursor:pointer}
+.concert-status-on_sale{background:#dffc78!important;color:#101014!important}
+.concert-status-coming_soon{background:#7ae7ff!important;color:#101014!important}
+.concert-status-cancelled{background:#ff7398!important;color:#fff!important}
+.concert-status-completed{background:#6f6f7b!important;color:#fff!important}
