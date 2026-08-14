@@ -1160,22 +1160,20 @@
       dot.setAttribute("aria-label", `${i + 1}. videoyu seç`);
       dot.addEventListener("click", () => renderArchive(i));
       archiveDots.appendChild(dot);
-      card.addEventListener(
-        "click",
-        (event) => {
-          if (archiveMoved) {
-            event.preventDefault();
-            event.stopPropagation();
-            return;
-          }
-          if (i !== archiveIndex) {
-            event.preventDefault();
-            event.stopPropagation();
-            renderArchive(i);
-          }
-        },
-        true,
-      );
+      card.addEventListener("click", (event) => {
+        if (archiveMoved) {
+          event.preventDefault();
+          event.stopPropagation();
+          return;
+        }
+
+        if (i !== archiveIndex) {
+          event.preventDefault();
+          event.stopPropagation();
+          renderArchive(i);
+          return;
+        }
+      });
     });
   }
   archivePrev?.addEventListener("click", () => renderArchive(archiveIndex - 1));
@@ -1198,7 +1196,9 @@
     archiveStartY = event.clientY;
     archiveDragging = true;
     archiveMoved = false;
-    videoCarousel.setPointerCapture?.(event.pointerId);
+    if (event.pointerType !== "mouse") {
+      videoCarousel.setPointerCapture?.(event.pointerId);
+    }
   });
   videoCarousel?.addEventListener("pointermove", (event) => {
     if (!archiveDragging || event.pointerId !== archivePointerId) return;
