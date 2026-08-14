@@ -1,3 +1,165 @@
+(async function bootCrushSite() {
+const cmsDb = window.crushSupabase;
+const cmsReady = window.CRUSH_DB_READY;
+
+const cmsEsc = (value = "") =>
+  String(value).replace(/[&<>'"]/g, (c) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;"
+  })[c]);
+
+function cmsUrl(value, fallback = "") {
+  const v = String(value || "").trim();
+  return v || fallback;
+}
+
+function memberSocialLink(url, label, icon) {
+  if (!url) return "";
+  return `<a aria-label="${cmsEsc(label)}" href="${cmsEsc(url)}" rel="noopener noreferrer" target="_blank"><span>${icon}</span></a>`;
+}
+
+function renderCmsMembers(members) {
+  if (!members?.length) return;
+
+  const preview = document.querySelector("#uyeler-preview .member-row");
+  if (preview) {
+    preview.innerHTML = members.map((m) => `
+      <div class="member" style="--member: ${cmsEsc(m.accent_color || "#ff7398")}">
+        <div class="member-photo">
+          <img alt="${cmsEsc(m.display_name)}" decoding="async" loading="lazy"
+               src="${cmsEsc(cmsUrl(m.thumbnail_url, m.photo_url))}" />
+          <span hidden>${cmsEsc((m.first_name || m.display_name || "?").slice(0,1))}</span>
+        </div>
+        <b>${cmsEsc((m.first_name || m.display_name).toLocaleUpperCase("tr-TR"))}</b>
+      </div>`).join("");
+  }
+
+  const track = document.getElementById("memberTrack");
+  if (track) {
+    track.innerHTML = members.map((m, i) => {
+      const number = String(i + 1).padStart(2, "0");
+      const tags = (m.tags || []).map((tag) => `<span>${cmsEsc(tag)}</span>`).join("");
+      const socials = [
+        memberSocialLink(m.instagram_url, `${m.display_name} Instagram`, "◎"),
+        memberSocialLink(m.x_url, `${m.display_name} X`, "𝕏"),
+        memberSocialLink(m.tiktok_url, `${m.display_name} TikTok`, "♪"),
+      ].join("");
+      return `
+        <article class="member-slide" data-member="${cmsEsc(m.first_name || m.display_name)}"
+                 style="--accent: ${cmsEsc(m.accent_color || "#ff7398")}">
+          <div class="member-slide-photo">
+            <img alt="${cmsEsc(m.display_name)}" decoding="async" loading="lazy"
+                 src="${cmsEsc(cmsUrl(m.photo_url, m.thumbnail_url))}" />
+            <span class="member-number">${number}</span>
+          </div>
+          <div class="member-slide-copy">
+            <span class="member-mini">CRUSH MEMBER ${number}</span>
+            <h3>${cmsEsc(m.display_name)}</h3>
+            <p>${cmsEsc(m.bio || "")}</p>
+            <div class="member-tags">${tags}</div>
+            <div class="member-socials">${socials}</div>
+          </div>
+        </article>`;
+    }).join("");
+  }
+
+  const total = document.querySelector(".members-counter b");
+  if (total) total.textContent = String(members.length).padStart(2, "0");
+  const kicker = document.querySelector(".members-heading .section-kicker");
+  if (kicker) kicker.textContent = `CRUSH MEMBERS · 01—${String(members.length).padStart(2, "0")}`;
+}
+
+function videoThumb(v, quality = "hqdefault") {
+  return cmsUrl(v.thumbnail_url, v.youtube_id ? `https://img.youtube.com/vi/${encodeURIComponent(v.youtube_id)}/${quality}.jpg` : "");
+}
+
+function renderCmsVideos(videos) {
+  if (!videos?.length) return;
+  const homepage = videos.filter((v) => v.section === "homepage" || v.section === "both");
+  const archive = videos.filter((v) => v.section === "archive" || v.section === "both");
+
+  const grid = document.querySelector("#video .video-grid");
+  if (grid && homepage.length) {
+    grid.innerHTML = homepage.map((v) => `
+      <button class="video-card video-trigger" data-title="${cmsEsc(v.title)}" data-video="${cmsEsc(v.youtube_id || "")}">
+        <span>
+          <img alt="${cmsEsc(v.title)}" decoding="async" loading="lazy"
+               src="${cmsEsc(videoThumb(v, "hqdefault"))}" />
+          <i>▶</i>
+        </span>
+        <b>${cmsEsc(String(v.title || "").toLocaleUpperCase("tr-TR"))}</b>
+        <small>${cmsEsc(v.category || v.badge || "CRUSH VIDEO")}</small>
+      </button>`).join("");
+  }
+
+  const stage = document.getElementById("videoCarouselStage");
+  if (stage && archive.length) {
+    stage.innerHTML = archive.map((v, i) => {
+      const no = String(i + 1).padStart(2, "0");
+      return `
+        <article class="archive-video-card video-trigger"
+                 data-index="${i}" data-title="${cmsEsc(v.title)}" data-video="${cmsEsc(v.youtube_id || "")}">
+          <div class="archive-thumb">
+            <img alt="${cmsEsc(v.title)}" decoding="async" loading="lazy"
+                 src="${cmsEsc(videoThumb(v, "maxresdefault"))}" />
+            <span class="archive-play">▶</span>
+            <small>${cmsEsc(v.badge || v.category || "ARCHIVE")}</small>
+          </div>
+          <div class="archive-copy">
+            <span>${no} · ${cmsEsc(v.badge || v.category || "ARCHIVE")}</span>
+            <h3>${cmsEsc(v.title)}</h3>
+            <p>${cmsEsc(v.description || "")}</p>
+          </div>
+        </article>`;
+    }).join("");
+  }
+}
+
+function renderFeaturedTrack(track) {
+  if (!track) return;
+  const cover = cmsUrl(track.cover_url, "images/crush-cover.webp");
+  const audio = cmsUrl(track.audio_url, "audio/crush.m4a");
+  document.querySelectorAll("#nowPlaying img, #recordSleeve img").forEach((img) => {
+    img.src = cover;
+    img.alt = `${track.title || "CRUSH"} kapağı`;
+  });
+  const label = document.querySelector("#nowPlaying strong");
+  if (label) label.textContent = `${track.title || "CRUSH!"} — ${track.subtitle || "CRUSH"}`;
+
+  const audioEl = document.getElementById("crushAudio");
+  if (audioEl && audio) {
+    audioEl.innerHTML = "";
+    const source = document.createElement("source");
+    source.src = audio;
+    source.type = audio.toLowerCase().includes(".m4a") ? "audio/mp4" : "audio/mpeg";
+    audioEl.appendChild(source);
+    audioEl.load();
+  }
+}
+
+async function hydrateCrushCms() {
+  if (!cmsReady || !cmsDb) return;
+  try {
+    const [membersRes, videosRes, musicRes] = await Promise.all([
+      cmsDb.from("members").select("*").eq("is_active", true).order("display_order", { ascending: true }),
+      cmsDb.from("videos").select("*").eq("is_visible", true).order("display_order", { ascending: true }),
+      cmsDb.from("music_tracks").select("*").eq("is_active", true).order("is_featured", { ascending: false }).order("display_order", { ascending: true }),
+    ]);
+    if (membersRes.error) throw membersRes.error;
+    if (videosRes.error) throw videosRes.error;
+    if (musicRes.error) throw musicRes.error;
+
+    if (membersRes.data?.length) renderCmsMembers(membersRes.data);
+    if (videosRes.data?.length) renderCmsVideos(videosRes.data);
+    if (musicRes.data?.length) renderFeaturedTrack(musicRes.data[0]);
+    document.documentElement.dataset.cms = "ready";
+  } catch (error) {
+    console.warn("CRUSH CMS içeriği yüklenemedi; statik fallback kullanılıyor:", error);
+    document.documentElement.dataset.cms = "fallback";
+  }
+}
+
+await hydrateCrushCms();
+
 document.addEventListener("keydown", (e) => {
   if (e.key === "F12") {
     e.preventDefault();
@@ -201,9 +363,11 @@ function closeVideo() {
   document.body.style.overflow = "";
 }
 
-document
-  .querySelectorAll(".video-trigger")
-  .forEach((btn) => btn.addEventListener("click", () => openVideo(btn)));
+document.addEventListener("click", (event) => {
+  const btn = event.target.closest(".video-trigger");
+  if (!btn || event.defaultPrevented) return;
+  openVideo(btn);
+});
 document
   .querySelectorAll("[data-close-modal]")
   .forEach((btn) => btn.addEventListener("click", closeVideo));
@@ -885,10 +1049,76 @@ openSenderForm?.addEventListener("click", () => {
 closeSenderForm?.addEventListener("click", () => {
   if (senderForm) senderForm.hidden = true;
 });
-senderForm?.addEventListener("submit", (event) => {
+function letterCanvasHasDrawing() {
+  if (!letterCanvas || !canvasCtx) return false;
+  try {
+    const pixels = canvasCtx.getImageData(0, 0, letterCanvas.width, letterCanvas.height).data;
+    for (let i = 3; i < pixels.length; i += 4) if (pixels[i] !== 0) return true;
+  } catch (_) {}
+  return false;
+}
+
+function resetLetterAfterSend() {
+  if (letterEditor) letterEditor.textContent = "";
+  if (canvasCtx && letterCanvas) {
+    const rect = letterCanvas.getBoundingClientRect();
+    canvasCtx.clearRect(0, 0, rect.width, rect.height);
+  }
+  senderForm?.reset();
+  setLetterTheme("1", "BLUE DOODLE");
+}
+
+senderForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
   if (!senderForm.reportValidity()) return;
-  if (letterSubmitNote) {
-    letterSubmitNote.textContent = `Mektup gönderime hazır ✓ Kâğıt stili ${selectedLetterTheme}; metin, çizim ve gönderici bilgileriyle birlikte veritabanına bağlanmaya hazır.`;
+
+  const message = (letterEditor?.innerText || "").trim();
+  if (!message) {
+    if (letterSubmitNote) letterSubmitNote.textContent = "Mektubun boş görünüyor. Önce birkaç kelime yazmalısın.";
+    letterEditor?.focus();
+    return;
+  }
+  if (message.length > 6000) {
+    if (letterSubmitNote) letterSubmitNote.textContent = "Mektup en fazla 6000 karakter olabilir.";
+    return;
+  }
+
+  if (!window.CRUSH_DB_READY || !window.crushSupabase) {
+    if (letterSubmitNote) letterSubmitNote.textContent = "Post Office henüz sunucuya bağlanmadı. Yönetici Supabase ayarlarını tamamlamalı.";
+    return;
+  }
+
+  const sendButton = document.getElementById("sendLetterBtn");
+  const form = new FormData(senderForm);
+  sendButton?.setAttribute("disabled", "");
+  if (letterSubmitNote) letterSubmitNote.textContent = "Mektubun CRUSH Post Office'e gönderiliyor…";
+
+  try {
+    const drawingDataUrl = letterCanvasHasDrawing() ? letterCanvas.toDataURL("image/png") : "";
+    const { data, error } = await window.crushSupabase.functions.invoke("submit-letter", {
+      body: {
+        firstName: form.get("firstName"),
+        lastName: form.get("lastName"),
+        email: form.get("email"),
+        message,
+        letterTheme: selectedLetterTheme,
+        drawingDataUrl,
+        website: form.get("website") || "",
+        turnstileToken: window.CRUSH_TURNSTILE_TOKEN || "",
+      },
+    });
+
+    if (error) throw error;
+    if (!data?.ok) throw new Error(data?.error || "Mektup gönderilemedi.");
+
+    if (letterSubmitNote) letterSubmitNote.textContent = "Mektubun CRUSH'a ulaştı ♡ Teşekkürler!";
+    resetLetterAfterSend();
+  } catch (error) {
+    console.error("CRUSH letter submit error", error);
+    if (letterSubmitNote) letterSubmitNote.textContent = error?.message || "Mektup gönderilemedi. Lütfen biraz sonra tekrar dene.";
+  } finally {
+    sendButton?.removeAttribute("disabled");
   }
 });
+
+})();

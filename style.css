@@ -5404,3 +5404,7 @@ img {
 .deck-icon.is-pause::after {
   right: 3px;
 }
+
+/* CRUSH CMS · anti-bot honeypot */
+.sender-honeypot{position:absolute!important;left:-10000px!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important}
+.sender-submit:disabled{opacity:.55;cursor:wait;filter:saturate(.45)}

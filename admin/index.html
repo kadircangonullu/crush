@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow,noarchive" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self'; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co; frame-ancestors 'none'; upgrade-insecure-requests" />
+  <title>CRUSH Control Room</title>
+  <link rel="icon" href="../images/crush-logo-original.webp" type="image/webp" />
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+  <main class="admin-shell">
+    <section class="login-panel" id="loginPanel">
+      <div class="admin-brand"><span>CRUSH</span><b>CONTROL ROOM</b></div>
+      <p>Yetkili yönetim paneli</p>
+      <form id="loginForm" class="login-form">
+        <label>E-posta<input name="email" type="email" autocomplete="username" required /></label>
+        <label>Şifre<input name="password" type="password" autocomplete="current-password" required /></label>
+        <button type="submit">SIGN IN →</button>
+        <p id="loginStatus" role="status"></p>
+      </form>
+    </section>
+
+    <section class="dashboard" id="dashboard" hidden>
+      <aside class="sidebar">
+        <div class="admin-brand"><span>CRUSH</span><b>CONTROL ROOM</b></div>
+        <nav>
+          <button class="nav-btn active" data-view="overview">Dashboard</button>
+          <button class="nav-btn" data-view="letters">Fan Letters <em id="unreadBadge">0</em></button>
+          <button class="nav-btn" data-view="members">Members</button>
+          <button class="nav-btn" data-view="videos">Videos</button>
+          <button class="nav-btn" data-view="music">Music</button>
+          <button class="nav-btn" disabled>Calendar <small>yakında</small></button>
+          <button class="nav-btn" disabled>Concerts <small>yakında</small></button>
+          <button class="nav-btn" disabled>News <small>yakında</small></button>
+          <button class="nav-btn" disabled>Media Library <small>yakında</small></button>
+          <button class="nav-btn" disabled>Site Settings <small>yakında</small></button>
+        </nav>
+        <button class="logout-btn" id="logoutBtn">Çıkış yap</button>
+      </aside>
+
+      <div class="admin-content">
+        <header class="admin-topbar">
+          <div><small>CRUSH ADMIN</small><h1 id="viewTitle">Dashboard</h1></div>
+          <div class="admin-user"><span id="adminName">Admin</span><small id="adminRole"></small></div>
+        </header>
+
+        <section class="view active" id="view-overview">
+          <div class="stat-grid">
+            <article><small>TOTAL LETTERS</small><strong id="totalLetters">—</strong></article>
+            <article><small>NEW LETTERS</small><strong id="newLetters">—</strong></article>
+            <article><small>FAVORITES</small><strong id="favoriteLetters">—</strong></article>
+            <article><small>LAST LETTER</small><strong id="lastLetter">—</strong></article>
+          </div>
+          <div class="panel-card">
+            <div class="panel-head"><div><small>INBOX PULSE</small><h2>Son mektuplar</h2></div><button id="openAllLetters">Tümünü aç →</button></div>
+            <div id="recentLetters" class="recent-list"></div>
+          </div>
+        </section>
+
+        <section class="view" id="view-letters">
+          <div class="letters-toolbar">
+            <div class="filters" id="letterFilters">
+              <button class="active" data-filter="all">Tümü</button>
+              <button data-filter="unread">Okunmamış</button>
+              <button data-filter="favorite">Favoriler</button>
+              <button data-filter="archived">Arşiv</button>
+            </div>
+            <button id="refreshLetters">Yenile ↻</button>
+          </div>
+          <div class="letters-layout">
+            <div id="lettersList" class="letters-list"></div>
+            <article id="letterDetail" class="letter-detail empty"><p>Bir mektup seç.</p></article>
+          </div>
+        </section>
+
+        <section class="view" id="view-members">
+          <div class="manager-layout">
+            <div class="manager-list-panel">
+              <div class="manager-head"><div><small>MEMBER DECK</small><h2>Üyeler</h2></div><button class="add-btn" id="newMemberBtn">+ Yeni</button></div>
+              <div id="membersAdminList" class="manager-list"></div>
+            </div>
+            <form id="memberForm" class="editor-card">
+              <input type="hidden" name="id" />
+              <div class="editor-head"><div><small>MEMBER EDITOR</small><h2 id="memberEditorTitle">Üye seç</h2></div><span id="memberSaveStatus"></span></div>
+              <div class="form-grid">
+                <label>Görünen ad<input name="display_name" required /></label>
+                <label>Slug<input name="slug" required /></label>
+                <label>Ad<input name="first_name" required /></label>
+                <label>Soyad<input name="last_name" /></label>
+                <label>Sıra<input name="display_order" type="number" min="0" value="0" /></label>
+                <label>Vurgu rengi<input name="accent_color" type="color" value="#ff7398" /></label>
+              </div>
+              <label>Biyografi<textarea name="bio" rows="5"></textarea></label>
+              <label>Etiketler <small>Virgülle ayır</small><input name="tags" placeholder="DANS, K-POP, PERFORMANS" /></label>
+              <div class="form-grid">
+                <label>Fotoğraf URL<input name="photo_url" /></label>
+                <label>Fotoğraf yükle<input name="photo_file" type="file" accept="image/*" /></label>
+                <label>Instagram<input name="instagram_url" type="url" /></label>
+                <label>X<input name="x_url" type="url" /></label>
+                <label>TikTok<input name="tiktok_url" type="url" /></label>
+                <label class="check-field"><input name="is_active" type="checkbox" checked /> Sitede aktif</label>
+              </div>
+              <div class="editor-actions"><button type="submit" class="primary">Değişiklikleri kaydet</button><button type="button" class="danger" id="deleteMemberBtn">Sil</button></div>
+            </form>
+          </div>
+        </section>
+
+        <section class="view" id="view-videos">
+          <div class="manager-layout">
+            <div class="manager-list-panel">
+              <div class="manager-head"><div><small>VIDEO ARCHIVE</small><h2>Videolar</h2></div><button class="add-btn" id="newVideoBtn">+ Yeni</button></div>
+              <div id="videosAdminList" class="manager-list"></div>
+            </div>
+            <form id="videoForm" class="editor-card">
+              <input type="hidden" name="id" />
+              <div class="editor-head"><div><small>VIDEO EDITOR</small><h2 id="videoEditorTitle">Video seç</h2></div><span id="videoSaveStatus"></span></div>
+              <div class="form-grid">
+                <label>Başlık<input name="title" required /></label>
+                <label>YouTube URL veya ID<input name="youtube" required /></label>
+                <label>Kategori / alt başlık<input name="category" placeholder="Reaction Video" /></label>
+                <label>Rozet<input name="badge" placeholder="REACTION" /></label>
+                <label>Bölüm<select name="section"><option value="homepage">Ana sayfa</option><option value="archive">Arşiv</option><option value="both">İkisi de</option></select></label>
+                <label>Sıra<input name="display_order" type="number" min="0" value="0" /></label>
+              </div>
+              <label>Açıklama<textarea name="description" rows="4"></textarea></label>
+              <label>Özel thumbnail URL <small>Boşsa YouTube görseli kullanılır</small><input name="thumbnail_url" /></label>
+              <div class="check-row">
+                <label class="check-field"><input name="is_visible" type="checkbox" checked /> Sitede görünür</label>
+                <label class="check-field"><input name="is_featured" type="checkbox" /> Öne çıkan</label>
+              </div>
+              <div class="editor-actions"><button type="submit" class="primary">Değişiklikleri kaydet</button><button type="button" class="danger" id="deleteVideoBtn">Sil</button></div>
+            </form>
+          </div>
+        </section>
+
+        <section class="view" id="view-music">
+          <div class="manager-layout">
+            <div class="manager-list-panel">
+              <div class="manager-head"><div><small>NOW PLAYING</small><h2>Müzikler</h2></div><button class="add-btn" id="newMusicBtn">+ Yeni</button></div>
+              <div id="musicAdminList" class="manager-list"></div>
+            </div>
+            <form id="musicForm" class="editor-card">
+              <input type="hidden" name="id" />
+              <div class="editor-head"><div><small>MUSIC EDITOR</small><h2 id="musicEditorTitle">Parça seç</h2></div><span id="musicSaveStatus"></span></div>
+              <div class="form-grid">
+                <label>Parça adı<input name="title" required /></label>
+                <label>Sanatçı / alt başlık<input name="subtitle" value="CRUSH" /></label>
+                <label>Yayın tarihi<input name="release_date" type="date" /></label>
+                <label>Sıra<input name="display_order" type="number" min="0" value="0" /></label>
+                <label>Kapak URL<input name="cover_url" /></label>
+                <label>Kapak yükle<input name="cover_file" type="file" accept="image/*" /></label>
+                <label>Ses dosyası URL<input name="audio_url" /></label>
+                <label>Ses yükle<input name="audio_file" type="file" accept="audio/*" /></label>
+                <label>YouTube<input name="youtube_url" type="url" /></label>
+                <label>Spotify<input name="spotify_url" type="url" /></label>
+                <label>Apple Music<input name="apple_music_url" type="url" /></label>
+              </div>
+              <div class="check-row">
+                <label class="check-field"><input name="is_featured" type="checkbox" /> Pikapta çal</label>
+                <label class="check-field"><input name="is_active" type="checkbox" checked /> Aktif</label>
+              </div>
+              <div class="editor-actions"><button type="submit" class="primary">Değişiklikleri kaydet</button><button type="button" class="danger" id="deleteMusicBtn">Sil</button></div>
+            </form>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
