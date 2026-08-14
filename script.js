@@ -225,10 +225,59 @@ function renderFeaturedTrack(track) {
   }
 }
 
+
+function renderCmsSiteProfile(profile) {
+  if (!profile || typeof profile !== "object") return;
+  if (profile.site_title) document.title = profile.site_title;
+  const kicker = document.querySelector(".hero-signal-kicker");
+  if (kicker && profile.hero_kicker) kicker.textContent = profile.hero_kicker;
+  const primary = document.querySelector(".hero-signal-copy b");
+  const secondary = document.querySelector(".hero-signal-copy span");
+  if (primary && profile.hero_primary) primary.textContent = profile.hero_primary;
+  if (secondary && profile.hero_secondary) secondary.textContent = profile.hero_secondary;
+  const previewHeading = document.querySelector("#uyeler-preview .panel-head h2");
+  if (previewHeading && (profile.hero_primary || profile.hero_secondary)) previewHeading.textContent = [profile.hero_primary, profile.hero_secondary].filter(Boolean).join(". ") + ".";
+
+  const storyKicker = document.querySelector(".story-copy > .section-kicker");
+  if (storyKicker && profile.story_kicker) storyKicker.textContent = profile.story_kicker;
+  const storyTitle = document.querySelector(".story-copy > h2");
+  if (storyTitle && (profile.story_title_line1 || profile.story_title_em)) {
+    storyTitle.replaceChildren();
+    storyTitle.append(document.createTextNode(profile.story_title_line1 || ""));
+    storyTitle.append(document.createElement("br"));
+    const em = document.createElement("em"); em.textContent = profile.story_title_em || ""; storyTitle.append(em);
+  }
+  const storyParagraphs = document.querySelectorAll(".story-text > p");
+  [profile.story_paragraph_1, profile.story_paragraph_2, profile.story_paragraph_3].forEach((text, i) => { if (text && storyParagraphs[i]) storyParagraphs[i].textContent = text; });
+  const groupPhoto = document.querySelector(".story-photo-card > img");
+  if (groupPhoto && profile.group_photo_url) groupPhoto.src = profile.group_photo_url;
+  const footer = document.querySelector("footer > p");
+  if (footer && profile.footer_text) footer.textContent = profile.footer_text;
+}
+
+function renderCmsSocialLinks(links) {
+  if (!Array.isArray(links)) return;
+  const byPlatform = Object.fromEntries(links.map((x) => [String(x.platform || "").toLowerCase(), x]));
+  const headerTargets = { instagram: 'Instagram', youtube: 'YouTube', x: 'X' };
+  Object.entries(headerTargets).forEach(([platform, aria]) => {
+    const link = byPlatform[platform]; const el = document.querySelector(`.header-actions a[aria-label="${aria}"]`);
+    if (!el) return;
+    if (link) { el.href = link.url; el.style.removeProperty("display"); }
+    else el.style.display = "none";
+  });
+  const hubTargets = { instagram: '.social-instagram', youtube: '.social-youtube', x: '.social-x', spotify: '.social-spotify' };
+  Object.entries(hubTargets).forEach(([platform, selector]) => {
+    const item = byPlatform[platform], el = document.querySelector(selector); if (!el) return;
+    if (!item) { el.style.display = 'none'; return; }
+    el.style.removeProperty('display'); el.href = item.url;
+    const title = el.querySelector('h3'); if (title && item.label) title.textContent = item.label;
+  });
+}
+
 async function hydrateCrushCms() {
   if (!cmsReady || !cmsDb) return;
   try {
-    const [membersRes, videosRes, musicRes, eventsRes, concertsRes, newsRes, announcementsRes] = await Promise.all([
+    const [membersRes, videosRes, musicRes, eventsRes, concertsRes, newsRes, announcementsRes, settingsRes, socialsRes] = await Promise.all([
       cmsDb.from("members").select("*").eq("is_active", true).order("display_order", { ascending: true }),
       cmsDb.from("videos").select("*").eq("is_visible", true).order("display_order", { ascending: true }),
       cmsDb.from("music_tracks").select("*").eq("is_active", true).order("is_featured", { ascending: false }).order("display_order", { ascending: true }),
@@ -236,8 +285,10 @@ async function hydrateCrushCms() {
       cmsDb.from("concerts").select("*").eq("is_visible", true).order("concert_date", { ascending: true }).order("concert_time", { ascending: true }),
       cmsDb.from("news").select("*").eq("is_visible", true).order("is_featured", { ascending: false }).order("published_at", { ascending: false }),
       cmsDb.from("announcements").select("*").eq("is_active", true).order("created_at", { ascending: false }).limit(1),
+      cmsDb.from("site_settings").select("key,value").eq("key", "site_profile").maybeSingle(),
+      cmsDb.from("social_links").select("*").eq("is_active", true).order("display_order", { ascending: true }),
     ]);
-    [membersRes, videosRes, musicRes, eventsRes, concertsRes, newsRes, announcementsRes].forEach((r) => { if (r.error) throw r.error; });
+    [membersRes, videosRes, musicRes, eventsRes, concertsRes, newsRes, announcementsRes, settingsRes, socialsRes].forEach((r) => { if (r.error) throw r.error; });
 
     if (membersRes.data?.length) renderCmsMembers(membersRes.data);
     if (videosRes.data?.length) renderCmsVideos(videosRes.data);
@@ -246,6 +297,8 @@ async function hydrateCrushCms() {
     renderCmsConcerts(concertsRes.data || []);
     renderCmsNews(newsRes.data || []);
     renderCmsAnnouncement(announcementsRes.data || []);
+    renderCmsSiteProfile(settingsRes.data?.value || {});
+    renderCmsSocialLinks(socialsRes.data || []);
     document.documentElement.dataset.cms = "ready";
   } catch (error) {
     console.warn("CRUSH CMS içeriği yüklenemedi; statik fallback kullanılıyor:", error);

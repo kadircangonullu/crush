@@ -35,8 +35,10 @@
           <button class="nav-btn" data-view="concerts">Concerts</button>
           <button class="nav-btn" data-view="news">News</button>
           <button class="nav-btn" data-view="announcements">Announcements</button>
-          <button class="nav-btn" disabled>Media Library <small>yakında</small></button>
-          <button class="nav-btn" disabled>Site Settings <small>yakında</small></button>
+          <button class="nav-btn" data-view="media">Media Library</button>
+          <button class="nav-btn" data-view="settings">Site Settings</button>
+          <button class="nav-btn" data-view="socials">Social Links</button>
+          <button class="nav-btn" data-view="audit">Audit Logs</button>
         </nav>
         <button class="logout-btn" id="logoutBtn">Çıkış yap</button>
       </aside>
@@ -53,10 +55,18 @@
             <article><small>NEW LETTERS</small><strong id="newLetters">—</strong></article>
             <article><small>FAVORITES</small><strong id="favoriteLetters">—</strong></article>
             <article><small>LAST LETTER</small><strong id="lastLetter">—</strong></article>
+            <article><small>ACTIVE MEMBERS</small><strong id="dashMembers">—</strong></article>
+            <article><small>VISIBLE VIDEOS</small><strong id="dashVideos">—</strong></article>
+            <article><small>MEDIA ASSETS</small><strong id="dashMedia">—</strong></article>
+            <article><small>UPCOMING EVENTS</small><strong id="dashEvents">—</strong></article>
           </div>
           <div class="panel-card">
             <div class="panel-head"><div><small>INBOX PULSE</small><h2>Son mektuplar</h2></div><button id="openAllLetters">Tümünü aç →</button></div>
             <div id="recentLetters" class="recent-list"></div>
+          </div>
+          <div class="panel-card dashboard-activity">
+            <div class="panel-head"><div><small>CONTROL ROOM ACTIVITY</small><h2>Son yönetim hareketleri</h2></div><button id="openAuditLogs">Audit Logs →</button></div>
+            <div id="recentAudit" class="recent-list"></div>
           </div>
         </section>
 
@@ -195,7 +205,7 @@
         <section class="view" id="view-concerts">
           <div class="manager-layout">
             <div class="manager-list-panel">
-              <div class="manager-head"><div><small>LIVE DATES</small><h2>Konserler</h2></div><div class="head-actions"><button class="add-btn secondary" id="syncBubiletBtn">↻ Bubilet Sync</button><button class="add-btn" id="newConcertBtn">+ Yeni</button></div></div>
+              <div class="manager-head"><div><small>LIVE DATES</small><h2>Konserler</h2></div><div class="head-actions"><button class="add-btn secondary" id="syncBubiletBtn" disabled title="Bubilet otomasyonu sonraki sürümde tekrar ele alınacak">Bubilet Sync · Paused</button><button class="add-btn" id="newConcertBtn">+ Yeni</button></div></div>
               <div id="bubiletSyncStatus" class="sync-strip">Bubilet otomatik senkron durumu yükleniyor…</div>
               <div id="concertsAdminList" class="manager-list"></div>
             </div>
@@ -262,6 +272,70 @@
             </form>
           </div>
         </section>
+
+        <section class="view" id="view-media">
+          <div class="phase4-grid">
+            <div class="panel-card">
+              <div class="panel-head"><div><small>MEDIA VAULT</small><h2>Media Library</h2></div><button id="refreshMedia">Yenile ↻</button></div>
+              <div class="media-toolbar"><select id="mediaKindFilter"><option value="all">Tüm dosyalar</option><option value="image">Görseller</option><option value="audio">Ses</option><option value="other">Diğer</option></select><span id="mediaSummary">—</span></div>
+              <div id="mediaGrid" class="media-grid-admin"></div>
+            </div>
+            <form id="mediaUploadForm" class="editor-card compact-editor">
+              <div class="editor-head"><div><small>UPLOAD</small><h2>Yeni dosya</h2></div><span id="mediaUploadStatus"></span></div>
+              <label>Dosya<input name="file" type="file" required /></label>
+              <label>Klasör<select name="folder"><option value="misc">Misc</option><option value="members">Members</option><option value="covers">Covers</option><option value="music">Music</option><option value="posters">Posters</option><option value="news">News</option></select></label>
+              <label>Alt metin / açıklama<input name="alt_text" maxlength="180" /></label>
+              <div class="editor-actions"><button type="submit" class="primary">Dosyayı yükle</button></div>
+              <p class="form-help">Yeni yüklemeler <code>crush-public</code> bucket'ına gider ve Media Library kataloğuna kaydedilir.</p>
+            </form>
+          </div>
+        </section>
+
+        <section class="view" id="view-settings">
+          <form id="siteSettingsForm" class="editor-card wide-editor">
+            <div class="editor-head"><div><small>GLOBAL CONTENT</small><h2>Site Settings</h2></div><span id="siteSettingsStatus"></span></div>
+            <div class="form-grid">
+              <label>Tarayıcı başlığı<input name="site_title" /></label>
+              <label>Hero kicker<input name="hero_kicker" /></label>
+              <label>Hero ana satır<input name="hero_primary" /></label>
+              <label>Hero ikinci satır<input name="hero_secondary" /></label>
+              <label>Hikâye kicker<input name="story_kicker" /></label>
+              <label>Hikâye başlık ilk satır<input name="story_title_line1" /></label>
+              <label>Hikâye vurgu satırı<input name="story_title_em" /></label>
+              <label>Footer yazısı<input name="footer_text" /></label>
+            </div>
+            <label>Hikâye paragraf 1<textarea name="story_paragraph_1" rows="4"></textarea></label>
+            <label>Hikâye paragraf 2<textarea name="story_paragraph_2" rows="4"></textarea></label>
+            <label>Hikâye paragraf 3<textarea name="story_paragraph_3" rows="4"></textarea></label>
+            <div class="form-grid"><label>Grup fotoğrafı URL<input name="group_photo_url" /></label><label>Yeni grup fotoğrafı yükle<input name="group_photo_file" type="file" accept="image/*" /></label></div>
+            <div class="editor-actions"><button type="submit" class="primary">Site ayarlarını kaydet</button></div>
+          </form>
+        </section>
+
+        <section class="view" id="view-socials">
+          <div class="manager-layout">
+            <div class="manager-list-panel">
+              <div class="manager-head"><div><small>OFFICIAL CHANNELS</small><h2>Social Links</h2></div><button class="add-btn" id="newSocialBtn">+ Yeni</button></div>
+              <div id="socialsAdminList" class="manager-list"></div>
+            </div>
+            <form id="socialForm" class="editor-card">
+              <input type="hidden" name="id" />
+              <div class="editor-head"><div><small>SOCIAL EDITOR</small><h2 id="socialEditorTitle">Hesap seç</h2></div><span id="socialSaveStatus"></span></div>
+              <div class="form-grid"><label>Platform<input name="platform" placeholder="instagram" required /></label><label>Görünen etiket<input name="label" placeholder="@wearecrushboys" /></label><label>Sıra<input name="display_order" type="number" min="0" /></label><label>URL<input name="url" type="url" required /></label></div>
+              <label class="check-field"><input name="is_active" type="checkbox" checked /> Sitede aktif</label>
+              <div class="editor-actions"><button type="submit" class="primary">Kaydet</button><button type="button" class="danger" id="deleteSocialBtn">Sil</button></div>
+            </form>
+          </div>
+        </section>
+
+        <section class="view" id="view-audit">
+          <div class="panel-card">
+            <div class="panel-head"><div><small>CONTROL ROOM HISTORY</small><h2>Audit Logs</h2></div><button id="refreshAudit">Yenile ↻</button></div>
+            <div class="audit-filter-row"><select id="auditEntityFilter"><option value="all">Tüm içerikler</option><option value="members">Members</option><option value="videos">Videos</option><option value="music_tracks">Music</option><option value="events">Calendar</option><option value="concerts">Concerts</option><option value="news">News</option><option value="announcements">Announcements</option><option value="site_settings">Settings</option><option value="social_links">Socials</option><option value="media_assets">Media</option><option value="letters">Letters</option></select></div>
+            <div id="auditList" class="audit-list"></div>
+          </div>
+        </section>
+
       </div>
     </section>
   </main>

@@ -29,7 +29,7 @@ async function requireAdmin(){
   adminProfile=profile;
   document.getElementById('adminName').textContent=profile.display_name || user.email;
   document.getElementById('adminRole').textContent=profile.role.toUpperCase();
-  showDashboard(); await Promise.all([loadLetters(), loadMembersAdmin(), loadVideosAdmin(), loadMusicAdmin(), loadEventsAdmin(), loadConcertsAdmin(), loadNewsAdmin(), loadAnnouncementsAdmin()]); return true;
+  showDashboard(); await Promise.all([loadLetters(), loadMembersAdmin(), loadVideosAdmin(), loadMusicAdmin(), loadEventsAdmin(), loadConcertsAdmin(), loadNewsAdmin(), loadAnnouncementsAdmin(), loadMediaAdmin(), loadSiteSettingsAdmin(), loadSocialsAdmin(), loadAuditLogs(), loadDashboardStats()]); return true;
 }
 
 loginForm?.addEventListener('submit',async e=>{
@@ -107,12 +107,13 @@ function setView(name){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById(`view-${name}`)?.classList.add('active');
   document.querySelectorAll('.nav-btn[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===name));
-  const titles={overview:'Dashboard',letters:'Fan Letters',members:'Members',videos:'Videos',music:'Music',calendar:'Calendar',concerts:'Concerts',news:'News',announcements:'Announcements'};
+  const titles={overview:'Dashboard',letters:'Fan Letters',members:'Members',videos:'Videos',music:'Music',calendar:'Calendar',concerts:'Concerts',news:'News',announcements:'Announcements',media:'Media Library',settings:'Site Settings',socials:'Social Links',audit:'Audit Logs'};
   document.getElementById('viewTitle').textContent=titles[name]||name;
 }
 function openLetterView(id){setView('letters');selectLetter(id);}
 document.querySelectorAll('.nav-btn[data-view]').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));
 document.getElementById('openAllLetters')?.addEventListener('click',()=>setView('letters'));
+document.getElementById('openAuditLogs')?.addEventListener('click',()=>setView('audit'));
 document.getElementById('refreshLetters')?.addEventListener('click',loadLetters);
 document.querySelectorAll('#letterFilters [data-filter]').forEach(b=>b.addEventListener('click',()=>{currentFilter=b.dataset.filter;document.querySelectorAll('#letterFilters [data-filter]').forEach(x=>x.classList.toggle('active',x===b));renderLetters();}));
 
@@ -153,14 +154,22 @@ function setEditorStatus(id,text='',isError=false){
   const el=document.getElementById(id); if(!el)return;
   el.textContent=text; el.classList.toggle('error',isError);
 }
-async function uploadPublicAsset(file,folder){
+async function uploadPublicAssetDetailed(file,folder,meta={}){
   if(!file || !file.size) return null;
   if(file.size > 6 * 1024 * 1024) throw new Error('Bu sürümde panelden yüklenen dosya en fazla 6 MB olabilir.');
   const ext=(file.name.split('.').pop()||'bin').toLowerCase().replace(/[^a-z0-9]/g,'');
   const path=`${folder}/${Date.now()}-${crypto.randomUUID()}.${ext}`;
   const {error}=await db.storage.from('crush-public').upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type||undefined});
   if(error) throw error;
-  return db.storage.from('crush-public').getPublicUrl(path).data.publicUrl;
+  const url=db.storage.from('crush-public').getPublicUrl(path).data.publicUrl;
+  const kind=meta.kind || (file.type?.startsWith('image/')?'image':file.type?.startsWith('audio/')?'audio':'other');
+  const {data:asset,error:catalogError}=await db.from('media_assets').insert({bucket:'crush-public',path,kind,alt_text:meta.altText||null,mime_type:file.type||null,size_bytes:file.size,created_by:(await db.auth.getUser()).data.user?.id||null}).select('*').single();
+  if(catalogError) console.warn('Media catalog kaydı oluşturulamadı:',catalogError);
+  return {url,path,asset};
+}
+async function uploadPublicAsset(file,folder){
+  const result=await uploadPublicAssetDetailed(file,folder);
+  return result?.url||null;
 }
 function emptyManager(el,text){if(el)el.innerHTML=`<div class="empty-state">${escapeHtml(text)}</div>`;}
 function resetEditor(form,titleId,title){
@@ -465,6 +474,129 @@ function editAnnouncement(id){const x=announcementsAdmin.find(v=>v.id===id),f=do
 document.getElementById('newAnnouncementBtn')?.addEventListener('click',()=>{const f=document.getElementById('announcementForm');resetEditor(f,'announcementEditorTitle','Yeni duyuru');setFormValue(f,'is_active',true);});
 document.getElementById('announcementForm')?.addEventListener('submit',async e=>{e.preventDefault();if(!canEditContent())return alert('Bu hesap içerik düzenleyemez.');const f=e.currentTarget;setEditorStatus('announcementSaveStatus','Kaydediliyor…');try{const payload={message:val(f,'message'),url:val(f,'url')||null,starts_at:localInputToIso(val(f,'starts_at')),ends_at:localInputToIso(val(f,'ends_at')),is_active:checked(f,'is_active'),updated_at:new Date().toISOString()};const id=val(f,'id'),query=id?db.from('announcements').update(payload).eq('id',id):db.from('announcements').insert(payload);const {error}=await query;if(error)throw error;setEditorStatus('announcementSaveStatus','Kaydedildi ✓');await loadAnnouncementsAdmin();if(id)editAnnouncement(id);else resetEditor(f,'announcementEditorTitle','Duyuru seç');}catch(err){setEditorStatus('announcementSaveStatus',err.message,true);}});
 document.getElementById('deleteAnnouncementBtn')?.addEventListener('click',async()=>{const f=document.getElementById('announcementForm'),id=val(f,'id');if(!id||!canEditContent())return;if(!confirm('Bu duyuruyu silmek istediğine emin misin?'))return;const {error}=await db.from('announcements').delete().eq('id',id);if(error)return alert(error.message);resetEditor(f,'announcementEditorTitle','Duyuru seç');await loadAnnouncementsAdmin();});
+
+
+// ===== PHASE 4 · MEDIA, SETTINGS, SOCIALS & AUDIT =====
+let mediaAdmin=[];
+let socialsAdmin=[];
+let auditAdmin=[];
+let siteProfileAdmin={};
+
+async function loadDashboardStats(){
+  if(!db)return;
+  const now=new Date().toISOString();
+  const queries=[
+    db.from('members').select('*',{count:'exact',head:true}).eq('is_active',true),
+    db.from('videos').select('*',{count:'exact',head:true}).eq('is_visible',true),
+    db.from('media_assets').select('*',{count:'exact',head:true}),
+    db.from('events').select('*',{count:'exact',head:true}).gte('event_date',now).eq('is_visible',true)
+  ];
+  const [m,v,a,e]=await Promise.all(queries);
+  document.getElementById('dashMembers').textContent=m.count??'—';
+  document.getElementById('dashVideos').textContent=v.count??'—';
+  document.getElementById('dashMedia').textContent=a.count??'—';
+  document.getElementById('dashEvents').textContent=e.count??'—';
+}
+
+function mediaPublicUrl(asset){
+  if(!asset?.bucket||!asset?.path)return '';
+  return db.storage.from(asset.bucket).getPublicUrl(asset.path).data.publicUrl||'';
+}
+function mediaKind(asset){
+  if(asset.kind)return asset.kind;
+  if(String(asset.mime_type||'').startsWith('image/'))return 'image';
+  if(String(asset.mime_type||'').startsWith('audio/'))return 'audio';
+  return 'other';
+}
+async function loadMediaAdmin(){
+  const el=document.getElementById('mediaGrid');if(!el||!db)return;
+  el.innerHTML='<div class="empty-state">Medya yükleniyor…</div>';
+  const {data,error}=await db.from('media_assets').select('*').order('created_at',{ascending:false}).limit(300);
+  if(error){el.innerHTML=`<div class="error-state">${escapeHtml(error.message)}</div>`;return;}
+  mediaAdmin=data||[];renderMediaAdmin();
+}
+function renderMediaAdmin(){
+  const el=document.getElementById('mediaGrid');if(!el)return;
+  const filter=document.getElementById('mediaKindFilter')?.value||'all';
+  const items=filter==='all'?mediaAdmin:mediaAdmin.filter(x=>mediaKind(x)===filter);
+  document.getElementById('mediaSummary').textContent=`${items.length} / ${mediaAdmin.length} dosya`;
+  el.innerHTML=items.map(a=>{
+    const kind=mediaKind(a),url=mediaPublicUrl(a);
+    const preview=kind==='image'?`<img src="${escapeHtml(url)}" alt="${escapeHtml(a.alt_text||a.path)}" loading="lazy">`:`<span class="media-file-icon">${kind==='audio'?'♫':'◫'}</span>`;
+    return `<article class="media-card-admin"><div class="media-preview">${preview}</div><div class="media-card-copy"><strong>${escapeHtml(a.alt_text||a.path.split('/').pop())}</strong><small>${escapeHtml(a.path)}</small><div class="media-card-actions"><a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">Aç ↗</a><button data-copy-url="${escapeHtml(url)}">URL kopyala</button><button data-delete-media="${a.id}">Sil</button></div></div></article>`;
+  }).join('')||'<div class="empty-state">Bu filtrede dosya yok.</div>';
+  el.querySelectorAll('[data-copy-url]').forEach(b=>b.addEventListener('click',async()=>{await navigator.clipboard.writeText(b.dataset.copyUrl);b.textContent='Kopyalandı ✓';setTimeout(()=>b.textContent='URL kopyala',1200);}));
+  el.querySelectorAll('[data-delete-media]').forEach(b=>b.addEventListener('click',()=>deleteMediaAsset(b.dataset.deleteMedia)));
+}
+async function deleteMediaAsset(id){
+  if(!canEditContent())return alert('Bu hesap içerik düzenleyemez.');
+  const a=mediaAdmin.find(x=>x.id===id);if(!a)return;
+  if(!confirm(`${a.path} dosyasını Storage ve Media Library'den silmek istediğine emin misin?`))return;
+  const {error:storageError}=await db.storage.from(a.bucket).remove([a.path]);if(storageError)return alert(storageError.message);
+  const {error}=await db.from('media_assets').delete().eq('id',id);if(error)return alert(error.message);
+  await Promise.all([loadMediaAdmin(),loadDashboardStats()]);
+}
+document.getElementById('mediaKindFilter')?.addEventListener('change',renderMediaAdmin);
+document.getElementById('refreshMedia')?.addEventListener('click',loadMediaAdmin);
+document.getElementById('mediaUploadForm')?.addEventListener('submit',async e=>{
+  e.preventDefault();if(!canEditContent())return alert('Bu hesap içerik düzenleyemez.');
+  const f=e.currentTarget,file=f.elements.file.files?.[0];setEditorStatus('mediaUploadStatus','Yükleniyor…');
+  try{await uploadPublicAssetDetailed(file,val(f,'folder')||'misc',{altText:val(f,'alt_text')||null});f.reset();setEditorStatus('mediaUploadStatus','Yüklendi ✓');await Promise.all([loadMediaAdmin(),loadDashboardStats()]);}
+  catch(err){setEditorStatus('mediaUploadStatus',err.message,true);}
+});
+
+async function loadSiteSettingsAdmin(){
+  const f=document.getElementById('siteSettingsForm');if(!f||!db)return;
+  const {data,error}=await db.from('site_settings').select('value').eq('key','site_profile').maybeSingle();
+  if(error){setEditorStatus('siteSettingsStatus',error.message,true);return;}
+  siteProfileAdmin=data?.value||{};
+  Object.keys(siteProfileAdmin).forEach(k=>setFormValue(f,k,siteProfileAdmin[k]));
+}
+document.getElementById('siteSettingsForm')?.addEventListener('submit',async e=>{
+  e.preventDefault();if(!canEditContent())return alert('Bu hesap içerik düzenleyemez.');
+  const f=e.currentTarget;setEditorStatus('siteSettingsStatus','Kaydediliyor…');
+  try{
+    let groupPhoto=val(f,'group_photo_url');const file=f.elements.group_photo_file.files?.[0];
+    if(file){const uploaded=await uploadPublicAssetDetailed(file,'posters',{altText:'CRUSH grup fotoğrafı'});groupPhoto=uploaded?.url||groupPhoto;setFormValue(f,'group_photo_url',groupPhoto);}
+    const keys=['site_title','hero_kicker','hero_primary','hero_secondary','story_kicker','story_title_line1','story_title_em','story_paragraph_1','story_paragraph_2','story_paragraph_3','footer_text'];
+    const value={};keys.forEach(k=>value[k]=val(f,k));value.group_photo_url=groupPhoto;
+    const user=(await db.auth.getUser()).data.user;
+    const {error}=await db.from('site_settings').upsert({key:'site_profile',value,updated_at:new Date().toISOString(),updated_by:user?.id||null},{onConflict:'key'});if(error)throw error;
+    siteProfileAdmin=value;setEditorStatus('siteSettingsStatus','Kaydedildi ✓');await Promise.all([loadMediaAdmin(),loadAuditLogs()]);
+  }catch(err){setEditorStatus('siteSettingsStatus',err.message,true);}
+});
+
+async function loadSocialsAdmin(){
+  const el=document.getElementById('socialsAdminList');if(!el||!db)return;emptyManager(el,'Sosyal hesaplar yükleniyor…');
+  const {data,error}=await db.from('social_links').select('*').order('display_order',{ascending:true});if(error){emptyManager(el,error.message);return;}socialsAdmin=data||[];renderSocialsAdmin();
+}
+function renderSocialsAdmin(){
+  const el=document.getElementById('socialsAdminList');if(!el)return;
+  el.innerHTML=socialsAdmin.map(x=>`<button class="manager-item" data-social-id="${x.id}"><span class="asset-icon">@</span><div><strong>${escapeHtml(x.platform)}</strong><small>#${x.display_order} · ${escapeHtml(x.label||'')} · ${x.is_active?'AKTİF':'GİZLİ'}</small></div></button>`).join('')||'<div class="empty-state">Henüz hesap yok.</div>';
+  el.querySelectorAll('[data-social-id]').forEach(b=>b.addEventListener('click',()=>editSocial(b.dataset.socialId)));
+}
+function editSocial(id){const x=socialsAdmin.find(v=>v.id===id),f=document.getElementById('socialForm');if(!x||!f)return;['id','platform','label','url','display_order','is_active'].forEach(k=>setFormValue(f,k,x[k]));document.getElementById('socialEditorTitle').textContent=x.platform;}
+document.getElementById('newSocialBtn')?.addEventListener('click',()=>{const f=document.getElementById('socialForm');resetEditor(f,'socialEditorTitle','Yeni sosyal hesap');setFormValue(f,'display_order',socialsAdmin.length+1);setFormValue(f,'is_active',true);});
+document.getElementById('socialForm')?.addEventListener('submit',async e=>{
+  e.preventDefault();if(!canEditContent())return alert('Bu hesap içerik düzenleyemez.');const f=e.currentTarget;setEditorStatus('socialSaveStatus','Kaydediliyor…');
+  try{const payload={platform:val(f,'platform').toLowerCase(),label:val(f,'label')||null,url:val(f,'url'),display_order:Number(val(f,'display_order')||0),is_active:checked(f,'is_active'),updated_at:new Date().toISOString()};const id=val(f,'id'),q=id?db.from('social_links').update(payload).eq('id',id):db.from('social_links').insert(payload);const {error}=await q;if(error)throw error;setEditorStatus('socialSaveStatus','Kaydedildi ✓');await Promise.all([loadSocialsAdmin(),loadAuditLogs()]);if(id)editSocial(id);else resetEditor(f,'socialEditorTitle','Hesap seç');}
+  catch(err){setEditorStatus('socialSaveStatus',err.message,true);}
+});
+document.getElementById('deleteSocialBtn')?.addEventListener('click',async()=>{const f=document.getElementById('socialForm'),id=val(f,'id');if(!id||!canEditContent())return;if(!confirm('Bu sosyal hesabı silmek istediğine emin misin?'))return;const {error}=await db.from('social_links').delete().eq('id',id);if(error)return alert(error.message);resetEditor(f,'socialEditorTitle','Hesap seç');await Promise.all([loadSocialsAdmin(),loadAuditLogs()]);});
+
+async function loadAuditLogs(){
+  const el=document.getElementById('auditList');if(!el||!db)return;el.innerHTML='<div class="empty-state">Kayıtlar yükleniyor…</div>';
+  const [{data,error},{data:profiles}]=await Promise.all([db.from('audit_logs').select('*').order('created_at',{ascending:false}).limit(250),db.from('admin_profiles').select('id,display_name')]);
+  if(error){el.innerHTML=`<div class="error-state">${escapeHtml(error.message)}</div>`;return;}const names=Object.fromEntries((profiles||[]).map(x=>[x.id,x.display_name||'Admin']));auditAdmin=(data||[]).map(x=>({...x,admin_name:names[x.admin_id]||'System'}));renderAuditLogs();
+}
+function renderAuditLogs(){
+  const el=document.getElementById('auditList');if(!el)return;const filter=document.getElementById('auditEntityFilter')?.value||'all';const rows=filter==='all'?auditAdmin:auditAdmin.filter(x=>x.entity_type===filter);
+  el.innerHTML=rows.map(x=>`<div class="audit-row"><span class="audit-action">${escapeHtml(x.action)}</span><span class="audit-entity">${escapeHtml(x.entity_type||'—')}</span><p><strong>${escapeHtml(x.admin_name)}</strong> · ${escapeHtml(x.entity_id||'')}</p><time>${fmtDate(x.created_at)}</time></div>`).join('')||'<div class="empty-state">Henüz audit kaydı yok. Phase 4 sonrasındaki değişiklikler burada görünür.</div>';
+  const recent=document.getElementById('recentAudit');
+  if(recent) recent.innerHTML=auditAdmin.slice(0,6).map(x=>`<div class="recent-item"><div><strong>${escapeHtml(x.admin_name)} · ${escapeHtml(x.action.toUpperCase())}</strong><p>${escapeHtml(x.entity_type||'')} · ${escapeHtml(x.entity_id||'')}</p></div><time>${shortDate(x.created_at)}</time></div>`).join('')||'<div class="empty-state">Henüz yönetim hareketi yok.</div>';
+}
+document.getElementById('auditEntityFilter')?.addEventListener('change',renderAuditLogs);
+document.getElementById('refreshAudit')?.addEventListener('click',loadAuditLogs);
 
 
 requireAdmin();
